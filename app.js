@@ -159,6 +159,10 @@ function initializeApp() {
             case 'research':
               return await campaignGenerator.generateResearch(currentCampaign.brief);
 
+            case 'images':
+              const newImages = await campaignGenerator.generateImages(currentCampaign.brief, currentCampaign.strategy);
+              return newImages.images;
+
             default:
               throw new Error(`Unknown regeneration type: ${type}`);
           }

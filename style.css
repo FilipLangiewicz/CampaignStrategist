@@ -1965,3 +1965,100 @@ a:hover {
 .justify-between { justify-content: space-between; }
 .gap-8 { gap: var(--space-8); }
 .gap-16 { gap: var(--space-16); }
+
+
+
+/* Marketing Images Section */
+.image-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.generated-image {
+  background: var(--color-cream-100);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.generated-image:hover {
+  transform: translateY(-4px);
+}
+
+.image-wrapper {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-wrapper:hover .image-overlay {
+  opacity: 1;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-gray-200);
+  color: var(--color-gray-400);
+}
+
+.placeholder-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.placeholder-text {
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.image-info {
+  padding: 1.5rem;
+}
+
+.image-prompt {
+  font-size: 0.9rem;
+  color: var(--color-slate-500);
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.image-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.generated-image--placeholder {
+  opacity: 0.7;
+}
+
+.generated-image--placeholder .image-info {
+  background: var(--color-gray-200);
+}

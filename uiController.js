@@ -206,8 +206,77 @@ class UIController {
       this.displayCopySection('headlines-list', campaign.copy.headlines || []);
       this.displayCopySection('social-posts', campaign.copy.social_posts || []);
       this.displayCopySection('ad-copy', campaign.copy.ad_copy || []);
+      this.displayImages(campaign.copy.images || []);
+
     }
   }
+
+displayImages(images) {
+  const container = document.getElementById('generated-images');
+  if (!container || !images.length) return;
+
+  container.innerHTML = images.map((image, index) => {
+    if (image.data && !image.placeholder && !image.error) {
+      // Rzeczywisty obraz
+      return `
+        <div class="generated-image">
+          <div class="image-wrapper">
+            <img src="data:${image.mimeType};base64,${image.data}" 
+                 alt="Generated marketing image ${index + 1}" 
+                 loading="lazy">
+            <div class="image-overlay">
+              <button class="btn btn--sm btn--primary" onclick="uiController.downloadImage('${image.id}', '${image.data}', '${image.mimeType}')">
+                💾 Download
+              </button>
+            </div>
+          </div>
+          <div class="image-info">
+            <p class="image-prompt">${this.escapeHtml(image.prompt)}</p>
+            <div class="image-actions">
+              <button class="btn btn--sm btn--outline" onclick="regenerateVisuals('images')">
+                🔄 Regenerate
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      // Placeholder lub błąd
+      return `
+        <div class="generated-image generated-image--placeholder">
+          <div class="image-wrapper">
+            <div class="image-placeholder">
+              <div class="placeholder-icon">🖼️</div>
+              <div class="placeholder-text">
+                ${image.error ? '⚠️ Generation failed' : '⏳ Generating image...'}
+              </div>
+            </div>
+          </div>
+          <div class="image-info">
+            <p class="image-prompt">${this.escapeHtml(image.prompt)}</p>
+            <div class="image-actions">
+              <button class="btn btn--sm btn--primary" onclick="regenerateVisuals('images')">
+                🔄 Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  }).join('');
+}
+
+// Dodaj metodę do pobierania obrazów:
+downloadImage(imageId, imageData, mimeType) {
+  const link = document.createElement('a');
+  link.href = `data:${mimeType};base64,${imageData}`;
+  link.download = `marketing-image-${imageId}.png`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  this.showSuccessMessage('Image downloaded successfully!');
+}
   
   updateResearchTab(campaign) {
     if (campaign.research) {

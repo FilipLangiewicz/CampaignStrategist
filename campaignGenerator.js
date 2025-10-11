@@ -117,9 +117,14 @@ class CampaignGenerator {
 
     if (result.success) {
       const validation = this.prompts.validateJsonResponse(result.content, 'copywriting');
+
       if (validation.valid) {
+        // Wygeneruj obrazy równolegle z tekstem
+        const images = await this.generateImages(briefData, strategy);
+
         return {
           ...validation.data,
+          images: images.images, // Dodaj obrazy do copy
           _meta: {
             tokensUsed: result.tokensUsed,
             model: result.model,
@@ -130,6 +135,98 @@ class CampaignGenerator {
     }
 
     return this.createFallbackCopy(briefData, strategy);
+  }
+
+  async generateImages(briefData, strategy) {
+    const promptData = this.prompts.getPrompt('imageGeneration', briefData, strategy);
+
+    try {
+      // Najpierw wygeneruj prompty do obrazów
+      const result = await this.gemini.generateContent(promptData.prompt);
+
+      if (result.success) {
+        const validation = this.prompts.validateJsonResponse(result.content, 'imageGeneration');
+
+        if (validation.valid && validation.data.image_prompts) {
+          const imagePrompts = validation.data.image_prompts;
+          const generatedImages = [];
+
+          // Wygeneruj każdy obraz osobno
+          for (let i = 0; i < Math.min(imagePrompts.length, 2); i++) {
+            try {
+              console.log(`Generating image ${i + 1}/2...`);
+              const imageResult = await this.gemini.generateImage(imagePrompts[i]);
+
+              if (imageResult.success && imageResult.type === 'image') {
+                generatedImages.push({
+                  id: `img_${Date.now()}_${i}`,
+                  prompt: imagePrompts[i],
+                  data: imageResult.content, // base64 data
+                  mimeType: imageResult.mimeType || 'image/png',
+                  generated_at: new Date().toISOString()
+                });
+              } else {
+                // Fallback - utwórz placeholder
+                generatedImages.push({
+                  id: `img_placeholder_${i}`,
+                  prompt: imagePrompts[i],
+                  data: null,
+                  placeholder: true,
+                  generated_at: new Date().toISOString()
+                });
+              }
+            } catch (imageError) {
+              console.warn(`Failed to generate image ${i + 1}:`, imageError);
+              // Dodaj placeholder w przypadku błędu
+              generatedImages.push({
+                id: `img_error_${i}`,
+                prompt: imagePrompts[i],
+                data: null,
+                error: imageError.message,
+                generated_at: new Date().toISOString()
+              });
+            }
+          }
+
+          return {
+            images: generatedImages,
+            _meta: {
+              tokensUsed: result.tokensUsed,
+              model: result.model,
+              generatedAt: new Date().toISOString()
+            }
+          };
+        }
+      }
+    } catch (error) {
+      console.warn('Image generation failed, using placeholders:', error);
+    }
+
+    // Fallback - wygeneruj placeholders
+    return this.createFallbackImages(briefData);
+  }
+
+  // Dodaj metodę fallback:
+  createFallbackImages(briefData) {
+    return {
+      images: [
+        {
+          id: 'fallback_product',
+          prompt: `Professional ${briefData.product} product photography with clean background`,
+          data: null,
+          placeholder: true,
+          fallback: true
+        },
+        {
+          id: 'fallback_lifestyle',
+          prompt: `${briefData.audience} enjoying ${briefData.product} in lifestyle setting`,
+          data: null,
+          placeholder: true,
+          fallback: true
+        }
+      ],
+      _fallback: true
+    };
   }
 
   async generateResearch(briefData) {

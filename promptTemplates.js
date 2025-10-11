@@ -91,6 +91,41 @@ RESPOND WITH ONLY THIS JSON STRUCTURE (no additional text):
         tokenLimit: 1000
       },
 
+            
+      imageGeneration: {
+        systemPrompt: "You are an AI that generates detailed image prompts for marketing campaigns. Create vivid, professional descriptions for marketing imagery.",
+        getUserPrompt: (brief) => `
+      Create 2 detailed image generation prompts for a marketing campaign with these details:
+      
+      Campaign Brief:
+      - Objective: ${brief.objective}
+      - Target Audience: ${brief.audience}
+      - Product/Service: ${brief.product}
+      - Channels: ${brief.channels?.join(', ') || 'Digital marketing'}
+      
+      Generate exactly 2 image prompts:
+      1. Product/Service Hero Image: Professional product shot or service visualization
+      2. Lifestyle Marketing Scene: People using/enjoying the product in real-world context
+      
+      Each prompt should be:
+      - Detailed and specific (lighting, composition, style)
+      - Professional marketing quality
+      - Suitable for ${brief.audience}
+      - 50-100 words each
+      
+      RESPOND WITH ONLY JSON:
+      {
+        "image_prompts": [
+          "Detailed prompt for hero product image...",
+          "Detailed prompt for lifestyle scene..."
+        ]
+      }`,
+        tokenLimit: 400,
+        expectedFormat: {
+          image_prompts: 'array'
+        }
+      },
+
       marketResearch: {
         systemPrompt: "You are a market research analyst specializing in digital marketing insights and competitive analysis.",
         getUserPrompt: (brief) => `

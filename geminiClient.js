@@ -17,6 +17,19 @@ class GeminiClient {
       this.processQueue();
     });
   }
+
+  async generateImage(prompt, options = {}) {
+    return new Promise((resolve, reject) => {
+      this.requestQueue.push({
+        prompt,
+        options: { ...options, imageGeneration: true },
+        resolve,
+        reject
+      });
+      this.processQueue();
+    });
+  }
+
   
   async processQueue() {
     if (this.isProcessing || this.requestQueue.length === 0) {
@@ -74,69 +87,79 @@ class GeminiClient {
     if (!this.config.apiKey) {
       throw new Error('API key not configured. Please check your .env file.');
     }
-    
-    // Check if can make request
+
     this.config.canMakeRequest();
-    
     const requestConfig = this.config.getRequestConfig();
-    const url = `${this.config.geminiConfig.baseUrl}?key=${this.config.apiKey}`;
-    // console.log(this.config.apiKey)
-    const requestBody = {
-      contents: [{
-        parts: [{
-          text: prompt
-        }]
-      }],
-      generationConfig: {
-        ...requestConfig.generationConfig,
-        ...options.generationConfig
-      },
-      // thinkingBudget: options.thinkingBudget || requestConfig.thinkingBudget
-    };
-    
-    // console.log('Making Gemini API request:', {
-    //   url: url.replace(this.config.apiKey, 'API_KEY_HIDDEN'),
-    //   bodySize: JSON.stringify(requestBody).length
-    // });
-    
+
+    let model, url, requestBody;
+
+    // === 🖼️ Jeśli generujemy obraz ===
+    if (options.imageGeneration) {
+      model = 'gemini-2.5-flash-image';
+      url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=AIzaSyDLHLROojxG7vZ4T35t0YwvuZdFWO3o5b8`; // ${this.config.apiKey}`;
+
+      requestBody = {
+        contents: [
+          { parts: [{ "text": prompt }] }
+        ]
+      };
+    }
+    // === 💬 Standardowe zapytanie tekstowe ===
+    else {
+      model = this.config.geminiConfig.model || 'gemini-2.0-flash';
+      url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.config.apiKey}`;
+
+      requestBody = {
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          ...requestConfig.generationConfig,
+          ...options.generationConfig
+        }
+      };
+    }
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json; charset=utf-8', // DODAJ charset
+        'Content-Type': 'application/json; charset=utf-8',
         'Accept': 'application/json',
-        'Accept-Charset': 'utf-8' // DODAJ to
+        'Accept-Charset': 'utf-8'
       },
       body: JSON.stringify(requestBody)
     });
-    
+
+    // === Obsługa błędów ===
     if (!response.ok) {
       const errorData = await response.text();
-      
-      if (response.status === 429) {
-        throw new Error('Rate limit exceeded. Please wait before making another request.');
-      } else if (response.status === 401) {
-        throw new Error('Invalid API key. Please check your configuration.');
-      } else if (response.status === 400) {
-        throw new Error('Invalid request format. Please try again.');
-      } else {
-        throw new Error(`API error ${response.status}: ${errorData}`);
-      }
+      throw new Error(`API error ${response.status}: ${errorData}`);
     }
-    
+
     const data = await response.json();
-    
-    // Validate response structure
-    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-      throw new Error('Invalid API response structure');
+
+    // === Jeśli to obraz ===
+    if (options.imageGeneration) {
+      const base64 = data?.candidates?.[0]?.content?.parts?.[0]?.inline_data?.data;
+      const mimeType = data?.images?.[0]?.image?.mimeType || 'image/png';
+
+      if (!base64) {
+        throw new Error('Image generation failed: No image data returned.');
+      }
+
+      return {
+        success: true,
+        content: base64,
+        mimeType,
+        type: 'image',
+        model
+      };
     }
-    
-    const responseText = data.candidates[0].content.parts[0].text;
-    
-    // Update token usage tracking
+
+    // === Jeśli to tekst ===
+    const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const inputTokens = this.estimateTokens(prompt);
     const outputTokens = this.estimateTokens(responseText);
     this.config.updateTokenUsage(inputTokens, outputTokens);
-    
+
     return {
       success: true,
       content: responseText,
@@ -145,7 +168,7 @@ class GeminiClient {
         output: outputTokens,
         total: inputTokens + outputTokens
       },
-      model: this.config.geminiConfig.model
+      model
     };
   }
   

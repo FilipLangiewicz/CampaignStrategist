@@ -1,16 +1,18 @@
 // Campaign Generation Engine
+console.log('=== GENERATOR LOADED ===');
+
 class CampaignGenerator {
   constructor(geminiClient, promptTemplates) {
     this.gemini = geminiClient;
     this.prompts = promptTemplates;
     this.currentCampaign = null;
     this.generationSteps = [
-      { id: 'analyze', name: 'Analyzing Brief', icon: 'đ' },
-      { id: 'strategy', name: 'Formulating Strategy', icon: 'đĄ' },
-      { id: 'visuals', name: 'Creating Visual Concepts', icon: 'đ¨' },
-      { id: 'copy', name: 'Generating Content', icon: 'âď¸' },
-      { id: 'research', name: 'Market Research', icon: 'đ' },
-      { id: 'planning', name: 'Media Planning', icon: 'đ' }
+      { id: 'analyze', name: 'Analyzing Brief', icon: 'ÄÂÂÂ' },
+      { id: 'strategy', name: 'Formulating Strategy', icon: 'ÄÂÂÄ' },
+      { id: 'visuals', name: 'Creating Visual Concepts', icon: 'ÄÂÂÂ¨' },
+      { id: 'copy', name: 'Generating Content', icon: 'Ă˘ÂÂÄÂ¸Â' },
+      { id: 'research', name: 'Market Research', icon: 'ÄÂÂÂ' },
+      { id: 'planning', name: 'Media Planning', icon: 'ÄÂÂÂ' }
     ];
   }
 
@@ -251,11 +253,11 @@ class CampaignGenerator {
         this.generateHeadline(briefData.objective, "emotional")
       ],
       social_posts: [
-        `đ Ready to ${briefData.objective.toLowerCase()}? Let's make it happen! #Success #Growth`,
-        `đĄ Great results start with great strategy. Your journey begins now! #Marketing #Innovation`,
-        `đŻ Precision meets creativity in everything we do. Excellence delivered! #Results`,
-        `â¨ From concept to conversion - we make it seamless! #Strategy #Success`,
-        `đ Join the brands that choose excellence. Your growth story awaits! #BrandGrowth`
+        `ÄÂÂÂ Ready to ${briefData.objective.toLowerCase()}? Let's make it happen! #Success #Growth`,
+        `ÄÂÂÄ Great results start with great strategy. Your journey begins now! #Marketing #Innovation`,
+        `ÄÂÂĹť Precision meets creativity in everything we do. Excellence delivered! #Results`,
+        `Ă˘ÂÂ¨ From concept to conversion - we make it seamless! #Strategy #Success`,
+        `ÄÂÂÂ Join the brands that choose excellence. Your growth story awaits! #BrandGrowth`
       ],
       ad_copy: [
         `Discover the power of strategic ${briefData.product} that delivers real results. Our proven approach combines innovation with excellence to help your brand reach new heights.`,
@@ -466,6 +468,6 @@ class CampaignGenerator {
 }
 
 // Export for module usage
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = CampaignGenerator;
-}
+// if (typeof module !== 'undefined' && module.exports) {
+//   module.exports = CampaignGenerator;
+// }

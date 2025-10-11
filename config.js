@@ -1,4 +1,6 @@
 // Configuration and Environment Management
+console.log('=== CONFIG LOADED ===');
+
 class AppConfig {
   constructor() {
     this.apiKey = null;
@@ -11,8 +13,8 @@ class AppConfig {
         requestsPerDay: 250
       },
       optimization: {
-        thinkingBudget: 0,
-        maxOutputTokens: 1000,
+        // thinkingBudget: 0,
+        maxOutputTokens: 5000,
         temperature: 0.7
       }
     };

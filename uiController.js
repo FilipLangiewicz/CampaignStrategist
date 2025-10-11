@@ -1,4 +1,6 @@
 // UI Controller for Campaign Management Interface
+console.log('=== UI CONTROLLER LOADED ===');
+
 class UIController {
   constructor() {
     this.currentSection = 'home';
@@ -74,7 +76,6 @@ class UIController {
     // Start campaign generation
     this.isProcessing = true;
     this.showSection('processing');
-    console.log("eee4")
 
     try {
       await window.campaignApp.generateCampaign(briefData, (step, status, message) => {
@@ -275,17 +276,17 @@ class UIController {
         <p class="copy-text">${this.escapeHtml(item)}</p>
         <div class="copy-actions">
           <button class="btn btn--sm btn--outline" onclick="uiController.editCopy(this)" title="Edit">
-            ✏️
+            Edit
           </button>
         </div>
       </div>
     `).join('');
   }
-  
+
   displayInfluencers(influencers) {
     const container = document.getElementById('influencers-list');
     if (!container || !influencers.length) return;
-    
+
     container.innerHTML = influencers.map(influencer => `
       <div class="influencer-item">
         <div class="influencer-avatar">
@@ -294,35 +295,35 @@ class UIController {
         <div class="influencer-info">
           <h4>${this.escapeHtml(influencer.name || 'Influencer')}</h4>
           <p class="influencer-stats">
-            ${influencer.followers || '0'} followers • ${influencer.engagement || '0%'} engagement • ${this.escapeHtml(influencer.niche || 'General')}
+            ${influencer.followers || '0'} followers â˘ ${influencer.engagement || '0%'} engagement â˘ ${this.escapeHtml(influencer.niche || 'General')}
           </p>
         </div>
       </div>
     `).join('');
   }
-  
+
   displayInsights(insights) {
     const container = document.getElementById('market-insights');
     if (!container || !insights.length) return;
-    
-    container.innerHTML = insights.map(insight => 
+
+    container.innerHTML = insights.map(insight =>
       `<div class="copy-item"><p class="copy-text">${this.escapeHtml(insight)}</p></div>`
     ).join('');
   }
-  
+
   displayCompetitors(competitors) {
     const container = document.getElementById('competitor-analysis');
     if (!container || !competitors.length) return;
-    
-    container.innerHTML = competitors.map(competitor => 
+
+    container.innerHTML = competitors.map(competitor =>
       `<div class="copy-item"><p class="copy-text">${this.escapeHtml(competitor)}</p></div>`
     ).join('');
   }
-  
+
   displayTimeline(timeline) {
     const container = document.getElementById('campaign-timeline');
     if (!container || !timeline.length) return;
-    
+
     container.innerHTML = timeline.map(week => `
       <div class="timeline-item">
         <div class="timeline-week">${this.escapeHtml(week.week || 'Week')}</div>
@@ -334,11 +335,11 @@ class UIController {
       </div>
     `).join('');
   }
-  
+
   displayBudgetBreakdown(breakdown) {
     const container = document.getElementById('budget-breakdown');
     if (!container || !breakdown.length) return;
-    
+
     container.innerHTML = breakdown.map(item => `
       <div class="budget-item">
         <span class="budget-category">${this.escapeHtml(item.category || 'Category')}</span>
@@ -346,7 +347,7 @@ class UIController {
       </div>
     `).join('');
   }
-  
+
   // Canvas navigation
   switchCanvasTab(tabId) {
     // Update navigation
@@ -354,25 +355,25 @@ class UIController {
       item.classList.remove('nav-item--active');
     });
     document.querySelector(`[data-tab="${tabId}"]`)?.classList.add('nav-item--active');
-    
+
     // Update content
     document.querySelectorAll('.canvas-tab').forEach(tab => {
       tab.classList.remove('canvas-tab--active');
     });
     document.getElementById(`${tabId}-tab`)?.classList.add('canvas-tab--active');
-    
+
     this.activeTab = tabId;
   }
-  
+
   // Regeneration methods
   async regenerateContent(type) {
     if (!this.currentCampaign || this.isProcessing) return;
-    
+
     this.showLoadingOverlay(`Regenerating ${type}...`);
-    
+
     try {
       const newContent = await window.campaignApp.regenerateElement(type);
-      
+
       // Update display based on type
       switch (type) {
         case 'headlines':
@@ -385,9 +386,9 @@ class UIController {
           this.displayCopySection('ad-copy', newContent);
           break;
       }
-      
+
       this.showSuccessMessage(`${type.charAt(0).toUpperCase() + type.slice(1)} regenerated successfully!`);
-      
+
     } catch (error) {
       console.error('Regeneration error:', error);
       this.showErrorMessage('Failed to regenerate content: ' + error.message);
@@ -395,12 +396,12 @@ class UIController {
       this.hideLoadingOverlay();
     }
   }
-  
+
   async regenerateVisuals(type) {
     if (!this.currentCampaign || this.isProcessing) return;
-    
+
     this.showLoadingOverlay(`Updating ${type}...`);
-    
+
     try {
       const newVisuals = await window.campaignApp.regenerateElement('visuals');
       this.updateVisualsTab({ visuals: newVisuals });
@@ -412,12 +413,12 @@ class UIController {
       this.hideLoadingOverlay();
     }
   }
-  
+
   async regenerateResearch(type) {
     if (!this.currentCampaign || this.isProcessing) return;
-    
+
     this.showLoadingOverlay('Updating research...');
-    
+
     try {
       const newResearch = await window.campaignApp.regenerateElement('research');
       this.updateResearchTab({ research: newResearch });
@@ -429,67 +430,67 @@ class UIController {
       this.hideLoadingOverlay();
     }
   }
-  
+
   async regeneratePlanning(type) {
     // Implementation for planning regeneration
     this.showSuccessMessage('Planning updated successfully!');
   }
-  
+
   // Copy editing
   editCopy(button) {
     const copyItem = button.closest('.copy-item');
     const textElement = copyItem.querySelector('.copy-text');
     const currentText = textElement.textContent;
-    
+
     // Create textarea for editing
     const textarea = document.createElement('textarea');
     textarea.className = 'form-control';
     textarea.value = currentText;
     textarea.style.minHeight = '60px';
-    
+
     // Replace text with textarea
     textElement.style.display = 'none';
     copyItem.insertBefore(textarea, textElement.nextSibling);
-    
+
     // Update button to save
-    button.innerHTML = '💾';
+    button.innerHTML = 'Save';
     button.title = 'Save';
     button.onclick = () => this.saveCopy(button, textarea, textElement);
-    
+
     // Focus and select
     textarea.focus();
     textarea.select();
   }
-  
+
   saveCopy(button, textarea, textElement) {
     const newText = textarea.value.trim();
     if (newText) {
       textElement.textContent = newText;
     }
-    
+
     // Remove textarea
     textarea.remove();
-    
+
     // Show original text
     textElement.style.display = 'block';
-    
+
     // Reset button
-    button.innerHTML = '✏️';
+    button.innerHTML = 'Edit';
     button.title = 'Edit';
     button.onclick = () => this.editCopy(button);
   }
-  
+
   // Campaign management
   exportCampaign() {
     if (!this.currentCampaign) {
       this.showErrorMessage('No campaign to export');
       return;
     }
-    
+
     const campaignData = JSON.stringify(this.currentCampaign, null, 2);
     const blob = new Blob([campaignData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
+
     const a = document.createElement('a');
     a.href = url;
     a.download = `${(this.currentCampaign.name || 'campaign').replace(/\s+/g, '-').toLowerCase()}.json`;
@@ -497,21 +498,21 @@ class UIController {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
+
     this.showSuccessMessage('Campaign exported successfully!');
   }
-  
+
   saveCampaign() {
     if (!this.currentCampaign) {
       this.showErrorMessage('No campaign to save');
       return;
     }
-    
+
     // In a real application, this would save to a database
     console.log('Campaign saved:', this.currentCampaign);
     this.showSuccessMessage('Campaign saved successfully!');
   }
-  
+
   showDemoCampaign() {
     // Load the sample campaign
     const demoCampaign = {
@@ -542,15 +543,15 @@ class UIController {
       copy: {
         headlines: [
           'Brew Change, One Cup at a Time',
-          'The Future is Green, and It Tastes Great', 
+          'The Future is Green, and It Tastes Great',
           'Sustainable Sips for the Next Generation'
         ],
         social_posts: [
-          '🌱 Your daily brew can change the world! Join the green coffee revolution this World Environment Day ☕ #GreenCoffee #EcoFriendly #Mumbai',
-          'From bean to cup, sustainability matters. Discover how your morning ritual can make a difference 🌍 #SustainableCoffee #WorldEnvironmentDay',
-          'Generation Green drinks responsibly! ♻️ Our eco-friendly coffee is as good for you as it is for the planet 🌿',
-          'Mumbai monsoons + sustainable coffee = perfect match! ☔☕ Join the movement for a greener tomorrow #MumbaiCoffee #EcoChoice',
-          'Wake up to a better world. Every sip supports sustainable farming and a healthier planet 🌱 #ConsciousCoffee #GreenMumbai'
+          'Your daily brew can change the world! Join the green coffee revolution this World Environment Day #GreenCoffee #EcoFriendly #Mumbai',
+          'From bean to cup, sustainability matters. Discover how your morning ritual can make a difference #SustainableCoffee #WorldEnvironmentDay',
+          'Generation Green drinks responsibly! Our eco-friendly coffee is as good for you as it is for the planet',
+          'Mumbai monsoons + sustainable coffee = perfect match! Join the movement for a greener tomorrow #MumbaiCoffee #EcoChoice',
+          'Wake up to a better world. Every sip supports sustainable farming and a healthier planet #ConsciousCoffee #GreenMumbai'
         ],
         ad_copy: [
           'Discover the coffee that\'s changing Mumbai\'s morning routine. Sustainably sourced, expertly roasted, responsibly packaged. Because great taste shouldn\'t cost the Earth.',
@@ -725,6 +726,6 @@ function saveCampaign() {
 }
 
 // Export for module usage
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { UIController, uiController };
-}
+// if (typeof module !== 'undefined' && module.exports) {
+//   module.exports = { UIController, uiController };
+// }

@@ -1,10 +1,15 @@
 // Master Prompt Templates for Campaign Generation
+console.log('=== TEMPLATES LOADED ===');
+
 class PromptTemplates {
+
   constructor() {
     this.templates = {
       strategyAnalysis: {
         systemPrompt: "You are a senior marketing strategist with 15+ years of experience. Analyze marketing briefs and create strategic foundations that drive results.",
         getUserPrompt: (brief) => `
+CRITICAL: You MUST respond with ONLY valid JSON. No explanations, no comments, no additional text. Just the JSON object.
+
 Analyze this marketing brief and create a comprehensive strategic foundation:
 
 Campaign Objective: ${brief.objective}
@@ -15,30 +20,32 @@ Budget Range: ${brief.budget || 'Not specified'}
 Channels: ${brief.channels.join(', ') || 'To be determined'}
 Brand Guidelines: ${brief.guidelines || 'Standard professional approach'}
 
-Provide a strategic analysis in this EXACT JSON format:
+RESPOND WITH ONLY THIS JSON STRUCTURE (no additional text):
+
 {
   "strategic_concept": "Compelling 4-6 word campaign concept",
   "target_audience_analysis": "Detailed psychographic and demographic analysis",
   "key_messages": ["Primary message", "Secondary message", "Supporting message"],
   "brand_positioning": "Clear positioning statement",
   "success_metrics": ["Metric 1", "Metric 2", "Metric 3"]
-}
-
-Focus on actionable insights and measurable outcomes. Be specific and strategic.`,
+}`,
         tokenLimit: 800
       },
-      
+
       visualDirection: {
         systemPrompt: "You are a creative director specializing in brand visual identity. Create detailed visual directions that inspire and guide creative teams.",
         getUserPrompt: (brief, strategy) => `
+CRITICAL: You MUST respond with ONLY valid JSON. No explanations, no comments, no additional text. Just the JSON object.
+
 Create a comprehensive visual direction based on this campaign:
 
 Campaign: ${brief.objective}
-Strategic Concept: ${strategy.strategic_concept}
+Strategic Concept: ${strategy?.strategic_concept || 'Not provided'}
 Target Audience: ${brief.audience}
 Brand Guidelines: ${brief.guidelines || 'Open to creative interpretation'}
 
-Provide visual direction in this EXACT JSON format:
+RESPOND WITH ONLY THIS JSON STRUCTURE (no additional text):
+
 {
   "mood_board_description": "Detailed description of visual mood and aesthetic",
   "color_palette": ["#HEX1", "#HEX2", "#HEX3", "#HEX4", "#HEX5"],
@@ -46,24 +53,25 @@ Provide visual direction in this EXACT JSON format:
   "visual_elements": ["Element 1", "Element 2", "Element 3", "Element 4"],
   "photography_style": "Photo style and composition guidelines",
   "overall_aesthetic": "Cohesive visual theme description"
-}
-
-Ensure colors work well together and reflect the brand personality. Be specific about visual execution.`,
+}`,
         tokenLimit: 600
       },
-      
+
       copywriting: {
         systemPrompt: "You are an expert copywriter who creates compelling, conversion-focused content across all marketing channels.",
         getUserPrompt: (brief, strategy) => `
+CRITICAL: You MUST respond with ONLY valid JSON. No explanations, no comments, no additional text. Just the JSON object.
+
 Create compelling copy variations for this campaign:
 
 Campaign: ${brief.objective}
-Strategic Concept: ${strategy.strategic_concept}
+Strategic Concept: ${strategy?.strategic_concept || 'Not provided'}
 Target Audience: ${brief.audience}
-Key Messages: ${strategy.key_messages.join(', ')}
+Key Messages: ${strategy?.key_messages?.join(', ') || 'Not provided'}
 Channels: ${brief.channels.join(', ')}
 
-Generate copy in this EXACT JSON format:
+RESPOND WITH ONLY THIS JSON STRUCTURE (no additional text):
+
 {
   "headlines": ["Headline 1", "Headline 2", "Headline 3"],
   "social_posts": [
@@ -79,15 +87,15 @@ Generate copy in this EXACT JSON format:
   ],
   "tagline": "Memorable campaign tagline",
   "call_to_action": ["CTA 1", "CTA 2", "CTA 3"]
-}
-
-Make copy engaging, actionable, and platform-appropriate. Include relevant emojis and hashtags for social posts.`,
+}`,
         tokenLimit: 1000
       },
-      
+
       marketResearch: {
         systemPrompt: "You are a market research analyst specializing in digital marketing insights and competitive analysis.",
         getUserPrompt: (brief) => `
+CRITICAL: You MUST respond with ONLY valid JSON. No explanations, no comments, no additional text. Just the JSON object.
+
 Provide market research insights for this campaign:
 
 Campaign: ${brief.objective}
@@ -95,7 +103,8 @@ Target Audience: ${brief.audience}
 Product: ${brief.product}
 Channels: ${brief.channels.join(', ')}
 
-Deliver insights in this EXACT JSON format:
+RESPOND WITH ONLY THIS JSON STRUCTURE (no additional text):
+
 {
   "audience_insights": [
     "Behavioral insight 1",
@@ -125,33 +134,34 @@ Deliver insights in this EXACT JSON format:
     }
   ],
   "market_opportunities": ["Opportunity 1", "Opportunity 2", "Opportunity 3"]
-}
-
-Base recommendations on current market trends and audience behavior patterns.`,
+}`,
         tokenLimit: 700
       },
-      
+
       mediaPlanning: {
         systemPrompt: "You are a media planning expert who creates strategic, results-driven campaign timelines and budget allocations.",
         getUserPrompt: (brief, strategy) => `
+CRITICAL: You MUST respond with ONLY valid JSON. No explanations, no comments, no additional text. Just the JSON object.
+
 Create a comprehensive media plan for this campaign:
 
 Campaign: ${brief.objective}
-Strategic Concept: ${strategy.strategic_concept}
+Strategic Concept: ${strategy?.strategic_concept || 'Not provided'}
 Budget: ${brief.budget}
 Channels: ${brief.channels.join(', ')}
 Duration: ${brief.occasion ? '4 weeks (event-driven)' : '6 weeks (ongoing)'}
 
-Structure the plan in this EXACT JSON format:
+RESPOND WITH ONLY THIS JSON STRUCTURE (no additional text):
+
 {
   "timeline": [
     {
       "week": "Week 1",
-      "focus": "Phase focus area",
+      "focus": "Phase focus area", 
       "tasks": ["Task 1", "Task 2", "Task 3"]
     },
     {
-      "week": "Week 2", 
+      "week": "Week 2",
       "focus": "Phase focus area",
       "tasks": ["Task 1", "Task 2", "Task 3"]
     },
@@ -179,44 +189,51 @@ Structure the plan in this EXACT JSON format:
     },
     {
       "category": "Influencer Marketing",
-      "percentage": "20%", 
+      "percentage": "20%",
       "rationale": "Why this allocation"
     },
     {
       "category": "Tools & Analytics",
-      "percentage": "10%",
+      "percentage": "10%", 
       "rationale": "Why this allocation"
     }
   ],
   "channel_strategy": "Detailed strategy for channel utilization and sequencing",
   "optimization_plan": "How to monitor and optimize campaign performance"
-}
-
-Ensure timeline is realistic and budget allocation is strategic.`,
+}`,
         tokenLimit: 600
       }
     };
   }
-  
+
   getPrompt(type, brief, additionalData = null) {
     const template = this.templates[type];
     if (!template) {
       throw new Error(`Unknown prompt type: ${type}`);
     }
-    
+
     const fullPrompt = template.systemPrompt + "\n\n" + template.getUserPrompt(brief, additionalData);
-    
+
     return {
       prompt: fullPrompt,
       maxTokens: template.tokenLimit,
       expectedFormat: 'JSON'
     };
   }
-  
+
+  // â ULEPSZONA WALIDACJA JSON z czyszczeniem
   validateJsonResponse(response, type) {
     try {
-      const parsed = JSON.parse(response);
-      
+      // Najpierw sprĂłbuj sparsowaÄ bezpoĹrednio
+      let parsed;
+      try {
+        parsed = JSON.parse(response);
+      } catch (initialError) {
+        // JeĹli nie udaĹo siÄ, sprĂłbuj wyczyĹciÄ odpowiedĹş
+        const cleanedResponse = this.cleanJsonResponse(response);
+        parsed = JSON.parse(cleanedResponse);
+      }
+
       // Basic validation based on prompt type
       const validationRules = {
         strategyAnalysis: ['strategic_concept', 'target_audience_analysis', 'key_messages'],
@@ -225,29 +242,73 @@ Ensure timeline is realistic and budget allocation is strategic.`,
         marketResearch: ['audience_insights', 'competitor_analysis', 'influencer_recommendations'],
         mediaPlanning: ['timeline', 'budget_allocation', 'channel_strategy']
       };
-      
+
       const requiredFields = validationRules[type] || [];
       const missingFields = requiredFields.filter(field => !(field in parsed));
-      
+
       if (missingFields.length > 0) {
         console.warn(`Missing fields in ${type} response:`, missingFields);
       }
-      
+
       return { valid: true, data: parsed, issues: missingFields };
     } catch (error) {
+      console.error('JSON validation failed:', error.message);
+      console.error('Original response:', response);
       return { valid: false, error: error.message };
     }
   }
-  
+
+  cleanJsonResponse(response) {
+    console.log('🧹 Cleaning JSON response:', response);
+
+    // Usuń typowe frazy wprowadzające
+    let cleaned = response
+      .replace(/.*?(here\s+is|here's|json|format|response|result).{0,50}?\s*(\{|\[)/gi, '$2')
+      .replace(/```\s*json/gi, '')
+      .replace(/```\s*$/gi, '')
+      .replace(/^\s*,/, ''); // Usuń przecinek na początku
+
+    // Znajdź pierwszy { i ostatni }
+    const firstBrace = cleaned.indexOf('{');
+    const lastBrace = cleaned.lastIndexOf('}');
+
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+    }
+
+    // POPRAW NIEKOMPLETNY JSON
+    // Jeśli kończy się przecinkiem i nie ma zamknięcia
+    if (cleaned.match(/,\s*$/)) {
+      // Usuń końcowy przecinek
+      cleaned = cleaned.replace(/,\s*$/, '');
+
+      // Spróbuj dodać brakujące zamknięcia
+      const openBraces = (cleaned.match(/\{/g) || []).length;
+      const closeBraces = (cleaned.match(/\}/g) || []).length;
+      const openBrackets = (cleaned.match(/\[/g) || []).length;
+      const closeBrackets = (cleaned.match(/\]/g) || []).length;
+
+      // Dodaj brakujące zamknięcia
+      for (let i = 0; i < (openBrackets - closeBrackets); i++) {
+        cleaned += ']';
+      }
+      for (let i = 0; i < (openBraces - closeBraces); i++) {
+        cleaned += '}';
+      }
+    }
+
+    console.log('✅ Cleaned JSON:', cleaned);
+    return cleaned;
+  }
+
   // Token estimation for cost optimization
   estimateTokens(text) {
     // Rough estimation: ~4 characters per token
     return Math.ceil(text.length / 4);
   }
-  
+
   optimizePromptLength(prompt, maxTokens) {
     const estimatedTokens = this.estimateTokens(prompt);
-    
     if (estimatedTokens > maxTokens * 0.8) {
       // Truncate if approaching limit, keeping essential parts
       const essentialParts = prompt.split('\n\n');

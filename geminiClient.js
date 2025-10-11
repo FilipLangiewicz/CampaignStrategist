@@ -1,4 +1,6 @@
 // Gemini API Client with Rate Limiting and Error Handling
+console.log('=== GEMINI CLIENT LOADED ===');
+
 class GeminiClient {
   constructor(config) {
     this.config = config;
@@ -78,7 +80,7 @@ class GeminiClient {
     
     const requestConfig = this.config.getRequestConfig();
     const url = `${this.config.geminiConfig.baseUrl}?key=${this.config.apiKey}`;
-    
+    // console.log(this.config.apiKey)
     const requestBody = {
       contents: [{
         parts: [{
@@ -89,18 +91,20 @@ class GeminiClient {
         ...requestConfig.generationConfig,
         ...options.generationConfig
       },
-      thinkingBudget: options.thinkingBudget || requestConfig.thinkingBudget
+      // thinkingBudget: options.thinkingBudget || requestConfig.thinkingBudget
     };
     
-    console.log('Making Gemini API request:', { 
-      url: url.replace(this.config.apiKey, 'API_KEY_HIDDEN'),
-      bodySize: JSON.stringify(requestBody).length 
-    });
+    // console.log('Making Gemini API request:', {
+    //   url: url.replace(this.config.apiKey, 'API_KEY_HIDDEN'),
+    //   bodySize: JSON.stringify(requestBody).length
+    // });
     
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8', // DODAJ charset
+        'Accept': 'application/json',
+        'Accept-Charset': 'utf-8' // DODAJ to
       },
       body: JSON.stringify(requestBody)
     });
@@ -188,11 +192,11 @@ class GeminiClient {
         content: JSON.stringify({
           headlines: ["Transform Your Marketing Today", "Results That Speak Volumes", "Your Success Story Starts Here"],
           social_posts: [
-            "đ Ready to elevate your marketing game? Let's create something amazing together! #Marketing #Innovation",
-            "đĄ Great campaigns start with great ideas. What's your next big move? #Strategy #Growth",
-            "đŻ Precision meets creativity in every campaign we craft. Your brand deserves excellence! #BrandStrategy",
-            "â¨ From concept to conversion - we make marketing magic happen! #Results #Success",
-            "đ Join the brands that choose excellence. Your growth story starts now! #Marketing #Growth"
+            "ÄÂÂÂ Ready to elevate your marketing game? Let's create something amazing together! #Marketing #Innovation",
+            "ÄÂÂÄ Great campaigns start with great ideas. What's your next big move? #Strategy #Growth",
+            "ÄÂÂĹť Precision meets creativity in every campaign we craft. Your brand deserves excellence! #BrandStrategy",
+            "Ă˘ÂÂ¨ From concept to conversion - we make marketing magic happen! #Results #Success",
+            "ÄÂÂÂ Join the brands that choose excellence. Your growth story starts now! #Marketing #Growth"
           ],
           ad_copy: [
             "Discover the power of strategic marketing that delivers real results. Our proven approach combines creativity with data-driven insights to help your brand reach new heights.",

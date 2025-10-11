@@ -2,7 +2,7 @@
 
 // Global state management (using variables instead of localStorage due to sandbox restrictions)
 let currentCampaign = null;
-let apiKey = null;
+let apiKey = 'AIzaSyABs8kt2QsVUrF5tId2c4q2cFglfY4mUwI';
 let isProcessing = false;
 
 // Sample campaign data
@@ -35,9 +35,9 @@ const sampleCampaigns = {
         "Sustainable Sips for the Next Generation"
       ],
       social_posts: [
-        "🌱 Your daily brew can change the world! Join the green coffee revolution this World Environment Day ☕ #GreenCoffee #EcoFriendly #Mumbai",
-        "From bean to cup, sustainability matters. Discover how your morning ritual can make a difference 🌍 #SustainableCoffee #WorldEnvironmentDay",
-        "Generation Green drinks responsibly! ♻️ Our eco-friendly coffee is as good for you as it is for the planet 🌿"
+        "đą Your daily brew can change the world! Join the green coffee revolution this World Environment Day â #GreenCoffee #EcoFriendly #Mumbai",
+        "From bean to cup, sustainability matters. Discover how your morning ritual can make a difference đ #SustainableCoffee #WorldEnvironmentDay",
+        "Generation Green drinks responsibly! âťď¸ Our eco-friendly coffee is as good for you as it is for the planet đż"
       ],
       ad_copy: [
         "Discover Mumbai's most sustainable coffee experience. Join thousands of young professionals making a difference with every sip.",
@@ -112,7 +112,8 @@ const sampleCampaigns = {
 class GeminiAPI {
   constructor(apiKey) {
     this.apiKey = apiKey;
-    this.baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+    // this.baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+    this.baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
   }
 
   async generateContent(prompt) {
@@ -155,7 +156,7 @@ class GeminiAPI {
     } else if (prompt.includes('headlines')) {
       return 'Brew Change, One Cup at a Time\nThe Future is Green, and It Tastes Great\nSustainable Sips for the Next Generation';
     } else if (prompt.includes('social media')) {
-      return '🌱 Your daily brew can change the world! #GreenCoffee\nFrom bean to cup, sustainability matters. 🌍\nGeneration Green drinks responsibly! ♻️';
+      return 'đą Your daily brew can change the world! #GreenCoffee\nFrom bean to cup, sustainability matters. đ\nGeneration Green drinks responsibly! âťď¸';
     }
     return 'AI-generated content based on your brief';
   }
@@ -167,13 +168,13 @@ function showSection(sectionId) {
   document.querySelectorAll('.section').forEach(section => {
     section.classList.remove('section--active');
   });
-  
+
   // Show target section
   const targetSection = document.getElementById(`${sectionId}-section`);
   if (targetSection) {
     targetSection.classList.add('section--active');
   }
-  
+
   // Handle special cases
   if (sectionId === 'demo') {
     showDemoCampaign();
@@ -190,9 +191,9 @@ function initializeForm() {
 
 async function handleFormSubmit(event) {
   event.preventDefault();
-  
+
   if (isProcessing) return;
-  
+
   const formData = new FormData(event.target);
   const briefData = {
     objective: formData.get('campaign-objective') || document.getElementById('campaign-objective').value,
@@ -201,19 +202,19 @@ async function handleFormSubmit(event) {
     occasion: formData.get('occasion') || document.getElementById('occasion').value,
     budget: formData.get('budget') || document.getElementById('budget').value,
     channels: Array.from(document.querySelectorAll('input[name="channels"]:checked')).map(cb => cb.value),
-    guidelines: formData.get('brand-guidelines') || document.getElementById('brand-guidelines').value,
-    apiKey: formData.get('gemini-api-key') || document.getElementById('gemini-api-key').value
+    guidelines: formData.get('brand-guidelines') || document.getElementById('brand-guidelines').value
+    // apiKey: formData.get('gemini-api-key') || document.getElementById('gemini-api-key').value
   };
-  
+
   // Store API key
-  apiKey = briefData.apiKey;
-  
+  apiKey = 'AIzaSyABs8kt2QsVUrF5tId2c4q2cFglfY4mUwI';
+
   // Validate required fields
   if (!briefData.objective || !briefData.audience || !briefData.product) {
     alert('Please fill in all required fields');
     return;
   }
-  
+
   // Start processing
   isProcessing = true;
   showSection('processing');
@@ -230,21 +231,21 @@ async function processUserBrief(briefData) {
     { id: 'step-4', duration: 2000 },
     { id: 'step-5', duration: 1500 }
   ];
-  
+
   for (let i = 0; i < steps.length; i++) {
     const step = steps[i];
     const stepElement = document.getElementById(step.id);
-    
+
     if (stepElement) {
       stepElement.classList.add('step--active');
-      
+
       await new Promise(resolve => setTimeout(resolve, step.duration));
-      
+
       stepElement.classList.remove('step--active');
       stepElement.classList.add('step--completed');
     }
   }
-  
+
   // Generate campaign using AI
   await generateCampaign(briefData);
 }
@@ -252,20 +253,20 @@ async function processUserBrief(briefData) {
 // Campaign generation
 async function generateCampaign(briefData) {
   const gemini = new GeminiAPI(apiKey);
-  
+
   try {
     // Generate strategic concept
     const conceptPrompt = `Create a strategic concept and campaign name for: ${briefData.objective}. Target audience: ${briefData.audience}. Product: ${briefData.product}. Occasion: ${briefData.occasion}. Provide a catchy campaign name and brief strategic concept.`;
     const concept = await gemini.generateContent(conceptPrompt);
-    
+
     // Generate headlines
     const headlinesPrompt = `Create 3 compelling headlines for a campaign: ${briefData.objective}. Target: ${briefData.audience}. Tone: ${briefData.guidelines || 'professional and engaging'}. Format as a numbered list.`;
     const headlines = await gemini.generateContent(headlinesPrompt);
-    
+
     // Generate social media posts
     const socialPrompt = `Create 3 social media posts for: ${briefData.objective}. Target: ${briefData.audience}. Include relevant emojis and hashtags. Each post should be engaging and platform-appropriate.`;
     const socialPosts = await gemini.generateContent(socialPrompt);
-    
+
     // Create campaign object
     currentCampaign = {
       name: briefData.objective.split(' ').slice(0, 3).join(' ') + ' Campaign',
@@ -283,11 +284,11 @@ async function generateCampaign(briefData) {
       research: generateResearch(briefData),
       planning: generatePlanning(briefData)
     };
-    
+
     // Display campaign
     displayCampaign(currentCampaign);
     showSection('canvas');
-    
+
   } catch (error) {
     console.error('Campaign generation error:', error);
     // Fallback to sample campaign
@@ -318,7 +319,7 @@ function generateVisualConcepts(briefData) {
     `Typography that resonates with target demographic`,
     `Visual elements for ${briefData.occasion || 'campaign timing'}`
   ];
-  
+
   return {
     moodboard: concepts,
     colors: ['#2D5016', '#8FBC8F', '#F5E6D3', '#A0522D'],
@@ -336,7 +337,7 @@ function generateAdCopy(briefData) {
 
 function generateResearch(briefData) {
   const location = briefData.audience.includes('Mumbai') ? 'Mumbai' : 'Local';
-  
+
   return {
     influencers: [
       {
@@ -369,7 +370,7 @@ function generateResearch(briefData) {
 
 function generatePlanning(briefData) {
   const duration = briefData.occasion ? 4 : 6;
-  
+
   return {
     timeline: [
       {
@@ -403,30 +404,30 @@ function displayCampaign(campaign) {
   // Update header
   document.getElementById('campaign-name').textContent = campaign.name;
   document.getElementById('strategic-concept').textContent = campaign.strategic_concept;
-  
+
   // Update overview
   document.getElementById('overview-audience').textContent = campaign.target_audience;
   document.getElementById('overview-budget').textContent = campaign.budget;
   document.getElementById('overview-channels').textContent = campaign.channels.join(', ');
-  
+
   // Display key messages
   displayKeyMessages(campaign.copy.headlines);
-  
+
   // Display visuals
   displayMoodboard(campaign.visuals.moodboard);
   displayColorPalette(campaign.visuals.colors);
   displayVisualConcepts(campaign.visuals.concepts);
-  
+
   // Display copy
   displayCopySection('headlines-list', campaign.copy.headlines);
   displayCopySection('social-posts', campaign.copy.social_posts);
   displayCopySection('ad-copy', campaign.copy.ad_copy);
-  
+
   // Display research
   displayInfluencers(campaign.research.influencers);
   displayInsights(campaign.research.insights);
   displayCompetitors(campaign.research.competitors);
-  
+
   // Display planning
   displayTimeline(campaign.planning.timeline);
   displayBudgetBreakdown(campaign.planning.budget_breakdown);
@@ -435,8 +436,8 @@ function displayCampaign(campaign) {
 function displayKeyMessages(messages) {
   const container = document.getElementById('key-messages');
   if (!container) return;
-  
-  container.innerHTML = messages.map(message => 
+
+  container.innerHTML = messages.map(message =>
     `<div class="message-item">${message}</div>`
   ).join('');
 }
@@ -444,8 +445,8 @@ function displayKeyMessages(messages) {
 function displayMoodboard(items) {
   const container = document.getElementById('moodboard');
   if (!container) return;
-  
-  container.innerHTML = items.map(item => 
+
+  container.innerHTML = items.map(item =>
     `<div class="mood-item">${item}</div>`
   ).join('');
 }
@@ -453,7 +454,7 @@ function displayMoodboard(items) {
 function displayColorPalette(colors) {
   const container = document.getElementById('color-palette');
   if (!container) return;
-  
+
   container.innerHTML = colors.map(color => `
     <div class="color-swatch" style="background-color: ${color}">
       <span class="color-code">${color}</span>
@@ -464,8 +465,8 @@ function displayColorPalette(colors) {
 function displayVisualConcepts(concepts) {
   const container = document.getElementById('visual-concepts');
   if (!container) return;
-  
-  container.innerHTML = concepts.map(concept => 
+
+  container.innerHTML = concepts.map(concept =>
     `<div class="copy-item"><p class="copy-text">${concept}</p></div>`
   ).join('');
 }
@@ -473,13 +474,13 @@ function displayVisualConcepts(concepts) {
 function displayCopySection(containerId, items) {
   const container = document.getElementById(containerId);
   if (!container) return;
-  
+
   container.innerHTML = items.map((item, index) => `
     <div class="copy-item">
       <p class="copy-text">${item}</p>
       <div class="copy-actions">
         <button class="btn btn--sm btn--outline" onclick="editCopy(this)" title="Edit">
-          ✏️
+          âď¸
         </button>
       </div>
     </div>
@@ -489,7 +490,7 @@ function displayCopySection(containerId, items) {
 function displayInfluencers(influencers) {
   const container = document.getElementById('influencers-list');
   if (!container) return;
-  
+
   container.innerHTML = influencers.map(influencer => `
     <div class="influencer-item">
       <div class="influencer-avatar">
@@ -498,7 +499,7 @@ function displayInfluencers(influencers) {
       <div class="influencer-info">
         <h4>${influencer.name}</h4>
         <p class="influencer-stats">
-          ${influencer.followers} followers • ${influencer.engagement} engagement • ${influencer.niche}
+          ${influencer.followers} followers â˘ ${influencer.engagement} engagement â˘ ${influencer.niche}
         </p>
       </div>
     </div>
@@ -508,8 +509,8 @@ function displayInfluencers(influencers) {
 function displayInsights(insights) {
   const container = document.getElementById('market-insights');
   if (!container) return;
-  
-  container.innerHTML = insights.map(insight => 
+
+  container.innerHTML = insights.map(insight =>
     `<div class="copy-item"><p class="copy-text">${insight}</p></div>`
   ).join('');
 }
@@ -517,8 +518,8 @@ function displayInsights(insights) {
 function displayCompetitors(competitors) {
   const container = document.getElementById('competitor-analysis');
   if (!container) return;
-  
-  container.innerHTML = competitors.map(competitor => 
+
+  container.innerHTML = competitors.map(competitor =>
     `<div class="copy-item"><p class="copy-text">${competitor}</p></div>`
   ).join('');
 }
@@ -526,7 +527,7 @@ function displayCompetitors(competitors) {
 function displayTimeline(timeline) {
   const container = document.getElementById('campaign-timeline');
   if (!container) return;
-  
+
   container.innerHTML = timeline.map(week => `
     <div class="timeline-item">
       <div class="timeline-week">${week.week}</div>
@@ -542,7 +543,7 @@ function displayTimeline(timeline) {
 function displayBudgetBreakdown(breakdown) {
   const container = document.getElementById('budget-breakdown');
   if (!container) return;
-  
+
   container.innerHTML = breakdown.map(item => `
     <div class="budget-item">
       <span class="budget-category">${item.category}</span>
@@ -568,7 +569,7 @@ function switchCanvasTab(tabId) {
     item.classList.remove('nav-item--active');
   });
   document.querySelector(`[data-tab="${tabId}"]`).classList.add('nav-item--active');
-  
+
   // Update content
   document.querySelectorAll('.canvas-tab').forEach(tab => {
     tab.classList.remove('canvas-tab--active');
@@ -579,17 +580,17 @@ function switchCanvasTab(tabId) {
 // Regeneration functions
 async function regenerateContent(type) {
   if (!currentCampaign) return;
-  
+
   showLoadingOverlay();
-  
+
   // Simulate AI regeneration delay
   await new Promise(resolve => setTimeout(resolve, 1500));
-  
+
   const gemini = new GeminiAPI(apiKey);
-  
+
   try {
     let newContent;
-    
+
     if (type === 'headlines') {
       const prompt = `Generate 3 new creative headlines for: ${currentCampaign.brief}. Make them different from previous versions but equally compelling.`;
       newContent = await gemini.generateContent(prompt);
@@ -601,9 +602,9 @@ async function regenerateContent(type) {
       currentCampaign.copy.social_posts = parseAIResponse(newContent, 3);
       displayCopySection('social-posts', currentCampaign.copy.social_posts);
     } else if (type === 'ads') {
-      const adCopy = generateAdCopy({ 
-        audience: currentCampaign.target_audience, 
-        product: currentCampaign.brief 
+      const adCopy = generateAdCopy({
+        audience: currentCampaign.target_audience,
+        product: currentCampaign.brief
       });
       currentCampaign.copy.ad_copy = adCopy;
       displayCopySection('ad-copy', currentCampaign.copy.ad_copy);
@@ -611,18 +612,18 @@ async function regenerateContent(type) {
   } catch (error) {
     console.error('Regeneration error:', error);
   }
-  
+
   hideLoadingOverlay();
 }
 
 async function regenerateVisuals(type) {
   if (!currentCampaign) return;
-  
+
   showLoadingOverlay();
-  
+
   // Simulate visual generation delay
   await new Promise(resolve => setTimeout(resolve, 1000));
-  
+
   if (type === 'moodboard') {
     const newMoodboard = [
       'Fresh visual direction for brand identity',
@@ -642,18 +643,18 @@ async function regenerateVisuals(type) {
     currentCampaign.visuals.colors = newColors;
     displayColorPalette(newColors);
   }
-  
+
   hideLoadingOverlay();
 }
 
 async function regenerateResearch(type) {
   if (!currentCampaign) return;
-  
+
   showLoadingOverlay();
-  
+
   // Simulate research delay
   await new Promise(resolve => setTimeout(resolve, 1200));
-  
+
   if (type === 'influencers') {
     // Generate new influencer recommendations
     const newInfluencers = [
@@ -663,18 +664,18 @@ async function regenerateResearch(type) {
     currentCampaign.research.influencers = newInfluencers;
     displayInfluencers(newInfluencers);
   }
-  
+
   hideLoadingOverlay();
 }
 
 async function regeneratePlanning(type) {
   if (!currentCampaign) return;
-  
+
   showLoadingOverlay();
-  
+
   // Simulate planning regeneration
   await new Promise(resolve => setTimeout(resolve, 1000));
-  
+
   if (type === 'timeline') {
     // Refresh timeline with new tasks
     const newTimeline = currentCampaign.planning.timeline.map(week => ({
@@ -694,7 +695,7 @@ async function regeneratePlanning(type) {
     currentCampaign.planning.budget_breakdown = newBudget;
     displayBudgetBreakdown(newBudget);
   }
-  
+
   hideLoadingOverlay();
 }
 
@@ -703,22 +704,22 @@ function editCopy(button) {
   const copyItem = button.closest('.copy-item');
   const textElement = copyItem.querySelector('.copy-text');
   const currentText = textElement.textContent;
-  
+
   // Create textarea for editing
   const textarea = document.createElement('textarea');
   textarea.className = 'form-control';
   textarea.value = currentText;
   textarea.style.minHeight = '60px';
-  
+
   // Replace text with textarea
   textElement.style.display = 'none';
   copyItem.insertBefore(textarea, textElement.nextSibling);
-  
+
   // Update button to save
-  button.innerHTML = '💾';
+  button.innerHTML = 'đž';
   button.title = 'Save';
   button.onclick = () => saveCopy(button, textarea, textElement);
-  
+
   // Focus and select
   textarea.focus();
   textarea.select();
@@ -729,15 +730,15 @@ function saveCopy(button, textarea, textElement) {
   if (newText) {
     textElement.textContent = newText;
   }
-  
+
   // Remove textarea
   textarea.remove();
-  
+
   // Show original text
   textElement.style.display = 'block';
-  
+
   // Reset button
-  button.innerHTML = '✏️';
+  button.innerHTML = 'âď¸';
   button.title = 'Edit';
   button.onclick = () => editCopy(button);
 }
@@ -762,11 +763,11 @@ function exportCampaign() {
     alert('No campaign to export');
     return;
   }
-  
+
   const campaignData = JSON.stringify(currentCampaign, null, 2);
   const blob = new Blob([campaignData], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-  
+
   const a = document.createElement('a');
   a.href = url;
   a.download = `${currentCampaign.name.replace(/\s+/g, '-').toLowerCase()}.json`;
@@ -774,7 +775,7 @@ function exportCampaign() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  
+
   alert('Campaign exported successfully!');
 }
 
@@ -783,7 +784,7 @@ function saveCampaign() {
     alert('No campaign to save');
     return;
   }
-  
+
   // In a real application, this would save to a database
   // For now, we'll just show a success message
   alert('Campaign saved successfully!');
@@ -791,15 +792,68 @@ function saveCampaign() {
 }
 
 // Initialize application
+// Initialize application
 function initializeApp() {
   initializeForm();
   initializeCanvas();
-  
+
   // Show home section by default
   showSection('home');
-  
+
+  // Create campaignApp object for external access
+  window.campaignApp = {
+    generateCampaign: async (briefData, progressCallback) => {
+      if (progressCallback) {
+        const steps = [
+          { name: 'analyze', message: 'Analyzing brief...' },
+          { name: 'strategy', message: 'Generating strategy...' },
+          { name: 'visuals', message: 'Creating visuals...' },
+          { name: 'copy', message: 'Writing copy...' },
+          { name: 'research', message: 'Researching market...' },
+          { name: 'planning', message: 'Planning timeline...' }
+        ];
+
+        for (const step of steps) {
+          progressCallback(step.name, 'processing', step.message);
+          await new Promise(r => setTimeout(r, 500));
+        }
+      }
+
+      await processUserBrief(briefData);
+    },
+
+    regenerateElement: async (type) => {
+      switch (type) {
+        case 'headlines':
+        case 'social':
+        case 'ads':
+          await regenerateContent(type);
+          return currentCampaign?.copy?.[type] || [];
+        case 'visuals':
+          await regenerateVisuals('moodboard');
+          return currentCampaign?.visuals || {};
+        case 'research':
+          await regenerateResearch('influencers');
+          return currentCampaign?.research || {};
+        default:
+          return null;
+      }
+    },
+
+    getCurrentCampaign: () => currentCampaign,
+    isProcessing: () => isProcessing
+  };
+
   console.log('Campaign AI application initialized');
 }
+
+// Start the application when DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+  initializeApp();
+}
+
 
 // Start the application when DOM is loaded
 if (document.readyState === 'loading') {

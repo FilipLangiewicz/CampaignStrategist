@@ -67,6 +67,30 @@
             <div class="section-header">
                 <h2>Create Marketing Campaign</h2>
                 <p>Tell us about your campaign goals and let our AI create a comprehensive strategy</p>
+                
+                <!-- API Setup Status -->
+                <div id="api-status" class="api-status">
+                    <div class="api-status__indicator">
+                        <span id="status-dot" class="status-dot status-dot--checking"></span>
+                        <span id="status-text">Checking API connection...</span>
+                    </div>
+                    <div id="setup-instructions" class="setup-instructions hidden">
+                        <h3>🔧 Setup Required</h3>
+                        <ol>
+                            <li>Get your free Gemini API key from <a href="https://ai.google.dev/gemini-api/docs/quickstart?hl=pl#javascript" target="_blank">Google AI Studio</a></li>
+                            <li>Create a <code>.env</code> file in your project root</li>
+                            <li>Add: <code>GEMINI_API_KEY=your_api_key_here</code></li>
+                            <li>Restart the application</li>
+                        </ol>
+                        <p><strong>Free Tier Limits:</strong> 10 requests/minute, 250K tokens/minute</p>
+                    </div>
+                    <div id="token-usage" class="token-usage hidden">
+                        <div class="usage-stats">
+                            <span>Tokens used today: <strong id="tokens-used">0</strong> / 250,000</span>
+                            <span>Requests: <strong id="requests-made">0</strong> / 250</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <form id="brief-form" class="brief-form">
@@ -136,12 +160,7 @@
                                   placeholder="Describe your brand voice, style guidelines, and any specific requirements"></textarea>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="form-label" for="gemini-api-key">Gemini API Key</label>
-                        <input type="password" id="gemini-api-key" class="form-control" 
-                               placeholder="Enter your Gemini API key for AI generation">
-                        <small class="form-hint">Get your free API key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></small>
-                    </div>
+
                 </div>
                 
                 <div class="form-actions">
@@ -480,6 +499,12 @@
         <p>Generating your campaign...</p>
     </div>
 
+    <!-- Load JavaScript modules -->
+    <script src="config.js"></script>
+    <script src="promptTemplates.js"></script>
+    <script src="geminiClient.js"></script>
+    <script src="campaignGenerator.js"></script>
+    <script src="uiController.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

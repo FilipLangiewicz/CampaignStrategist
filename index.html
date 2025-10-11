@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampaignAI - Intelligent Marketing Campaign Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="logo">
+                    <h1>CampaignAI</h1>
+                    <span>Intelligent Campaign Generator</span>
+                </div>
+                <nav class="nav">
+                    <button class="btn btn--outline" onclick="showSection('home')">Home</button>
+                    <button class="btn btn--outline" onclick="showSection('campaigns')">My Campaigns</button>
+                    <button class="btn btn--primary" onclick="showSection('brief')">Create Campaign</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Home Section -->
+    <section id="home-section" class="section section--active">
+        <div class="hero">
+            <div class="container">
+                <div class="hero__content">
+                    <h1 class="hero__title">Transform Ideas into Complete Marketing Campaigns</h1>
+                    <p class="hero__subtitle">AI-powered platform that turns your marketing brief into a comprehensive, strategic campaign package in minutes.</p>
+                    <div class="hero__actions">
+                        <button class="btn btn--primary btn--lg" onclick="showSection('brief')">
+                            Create Your First Campaign
+                        </button>
+                        <button class="btn btn--outline btn--lg" onclick="showSection('demo')">
+                            View Sample Campaign
+                        </button>
+                    </div>
+                </div>
+                <div class="hero__features">
+                    <div class="feature">
+                        <div class="feature__icon">🎯</div>
+                        <h3>Strategic Planning</h3>
+                        <p>AI analyzes your brief and formulates winning strategies</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature__icon">✨</div>
+                        <h3>Content Generation</h3>
+                        <p>Automated copywriting and visual concept creation</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature__icon">📊</div>
+                        <h3>Media Planning</h3>
+                        <p>Timeline, budget allocation, and channel strategy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brief Input Section -->
+    <section id="brief-section" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Create Marketing Campaign</h2>
+                <p>Tell us about your campaign goals and let our AI create a comprehensive strategy</p>
+            </div>
+            
+            <form id="brief-form" class="brief-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="campaign-objective">Campaign Objective</label>
+                        <input type="text" id="campaign-objective" class="form-control" 
+                               placeholder="e.g., Launch social media campaign for eco-friendly coffee brand" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="target-audience">Target Audience</label>
+                        <input type="text" id="target-audience" class="form-control" 
+                               placeholder="e.g., Gen Z (18-25), Mumbai, environmentally conscious" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="product-info">Product/Service Information</label>
+                        <textarea id="product-info" class="form-control" rows="3" 
+                                  placeholder="Describe your product or service, key features, and unique selling points" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="occasion">Occasion/Timing</label>
+                        <input type="text" id="occasion" class="form-control" 
+                               placeholder="e.g., World Environment Day, Product Launch, Holiday Season">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="budget">Budget Range</label>
+                        <select id="budget" class="form-control">
+                            <option value="">Select budget range</option>
+                            <option value="1000-5000">$1,000 - $5,000</option>
+                            <option value="5000-15000">$5,000 - $15,000</option>
+                            <option value="15000-50000">$15,000 - $50,000</option>
+                            <option value="50000+">$50,000+</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="channels">Preferred Channels</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="channels" value="instagram"> Instagram
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="channels" value="facebook"> Facebook
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="channels" value="twitter"> Twitter/X
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="channels" value="linkedin"> LinkedIn
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="channels" value="youtube"> YouTube
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="channels" value="tiktok"> TikTok
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group form-group--full">
+                        <label class="form-label" for="brand-guidelines">Brand Guidelines &amp; Tone</label>
+                        <textarea id="brand-guidelines" class="form-control" rows="3" 
+                                  placeholder="Describe your brand voice, style guidelines, and any specific requirements"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="gemini-api-key">Gemini API Key</label>
+                        <input type="password" id="gemini-api-key" class="form-control" 
+                               placeholder="Enter your Gemini API key for AI generation">
+                        <small class="form-hint">Get your free API key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></small>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn--outline" onclick="showSection('home')">Back</button>
+                    <button type="submit" class="btn btn--primary btn--lg">Generate Campaign</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Processing Section -->
+    <section id="processing-section" class="section">
+        <div class="container">
+            <div class="processing">
+                <div class="processing__header">
+                    <h2>AI is Creating Your Campaign</h2>
+                    <p>Our intelligent agent is analyzing your brief and generating a comprehensive campaign strategy</p>
+                </div>
+                
+                <div class="processing__steps">
+                    <div class="step" id="step-1">
+                        <div class="step__icon">🔍</div>
+                        <div class="step__content">
+                            <h3>Analyzing Brief</h3>
+                            <p>Understanding your objectives and target audience</p>
+                        </div>
+                        <div class="step__progress"></div>
+                    </div>
+                    
+                    <div class="step" id="step-2">
+                        <div class="step__icon">💡</div>
+                        <div class="step__content">
+                            <h3>Formulating Strategy</h3>
+                            <p>Developing strategic concept and positioning</p>
+                        </div>
+                        <div class="step__progress"></div>
+                    </div>
+                    
+                    <div class="step" id="step-3">
+                        <div class="step__icon">✍️</div>
+                        <div class="step__content">
+                            <h3>Creating Content</h3>
+                            <p>Generating copy variations and headlines</p>
+                        </div>
+                        <div class="step__progress"></div>
+                    </div>
+                    
+                    <div class="step" id="step-4">
+                        <div class="step__icon">🎨</div>
+                        <div class="step__content">
+                            <h3>Visual Concepts</h3>
+                            <p>Designing mood boards and visual identity</p>
+                        </div>
+                        <div class="step__progress"></div>
+                    </div>
+                    
+                    <div class="step" id="step-5">
+                        <div class="step__icon">📊</div>
+                        <div class="step__content">
+                            <h3>Media Planning</h3>
+                            <p>Creating timeline and budget allocation</p>
+                        </div>
+                        <div class="step__progress"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Campaign Canvas Section -->
+    <section id="canvas-section" class="section">
+        <div class="canvas-container">
+            <!-- Canvas Header -->
+            <div class="canvas-header">
+                <div class="canvas-header__content">
+                    <div class="campaign-title">
+                        <h1 id="campaign-name">Campaign Name</h1>
+                        <p id="strategic-concept">Strategic Concept</p>
+                    </div>
+                    <div class="canvas-actions">
+                        <button class="btn btn--outline" onclick="exportCampaign()">Export Campaign</button>
+                        <button class="btn btn--primary" onclick="saveCampaign()">Save Campaign</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Canvas Sidebar -->
+            <div class="canvas-sidebar">
+                <nav class="canvas-nav">
+                    <button class="nav-item nav-item--active" data-tab="overview">Overview</button>
+                    <button class="nav-item" data-tab="visuals">Visuals</button>
+                    <button class="nav-item" data-tab="copy">Copy</button>
+                    <button class="nav-item" data-tab="research">Research</button>
+                    <button class="nav-item" data-tab="planning">Planning</button>
+                </nav>
+            </div>
+            
+            <!-- Canvas Content -->
+            <div class="canvas-content">
+                <!-- Overview Tab -->
+                <div class="canvas-tab canvas-tab--active" id="overview-tab">
+                    <div class="overview-grid">
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Campaign Overview</h3>
+                                <div class="overview-stats">
+                                    <div class="stat">
+                                        <span class="stat__label">Target Audience</span>
+                                        <span class="stat__value" id="overview-audience">Gen Z, Mumbai</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat__label">Budget</span>
+                                        <span class="stat__value" id="overview-budget">$5,000</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat__label">Duration</span>
+                                        <span class="stat__value">4 weeks</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat__label">Channels</span>
+                                        <span class="stat__value" id="overview-channels">Instagram, Facebook</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Key Messages</h3>
+                                <div id="key-messages" class="message-list">
+                                    <!-- Generated key messages will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Success Metrics</h3>
+                                <ul class="metrics-list">
+                                    <li>Engagement Rate: Target 5%+</li>
+                                    <li>Reach: 100k+ impressions</li>
+                                    <li>Conversions: 500+ website visits</li>
+                                    <li>Brand Awareness: 15% lift</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Visuals Tab -->
+                <div class="canvas-tab" id="visuals-tab">
+                    <div class="visuals-grid">
+                        <div class="card">
+                            <div class="card__header">
+                                <h3>Mood Board</h3>
+                                <button class="btn btn--sm btn--outline" onclick="regenerateVisuals('moodboard')">Regenerate</button>
+                            </div>
+                            <div class="card__body">
+                                <div class="moodboard" id="moodboard">
+                                    <!-- Mood board will be generated here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__header">
+                                <h3>Color Palette</h3>
+                                <button class="btn btn--sm btn--outline" onclick="regenerateVisuals('colors')">Regenerate</button>
+                            </div>
+                            <div class="card__body">
+                                <div class="color-palette" id="color-palette">
+                                    <!-- Color palette will be generated here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__header">
+                                <h3>Visual Concepts</h3>
+                                <button class="btn btn--sm btn--outline" onclick="regenerateVisuals('concepts')">Regenerate</button>
+                            </div>
+                            <div class="card__body">
+                                <div id="visual-concepts">
+                                    <!-- Visual concepts will be listed here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Copy Tab -->
+                <div class="canvas-tab" id="copy-tab">
+                    <div class="copy-grid">
+                        <div class="card">
+                            <div class="card__header">
+                                <h3>Headlines</h3>
+                                <button class="btn btn--sm btn--outline" onclick="regenerateContent('headlines')">Regenerate</button>
+                            </div>
+                            <div class="card__body">
+                                <div id="headlines-list" class="copy-list">
+                                    <!-- Headlines will be generated here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__header">
+                                <h3>Social Media Posts</h3>
+                                <button class="btn btn--sm btn--outline" onclick="regenerateContent('social')">Regenerate</button>
+                            </div>
+                            <div class="card__body">
+                                <div id="social-posts" class="copy-list">
+                                    <!-- Social media posts will be generated here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__header">
+                                <h3>Ad Copy</h3>
+                                <button class="btn btn--sm btn--outline" onclick="regenerateContent('ads')">Regenerate</button>
+                            </div>
+                            <div class="card__body">
+                                <div id="ad-copy" class="copy-list">
+                                    <!-- Ad copy will be generated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Research Tab -->
+                <div class="canvas-tab" id="research-tab">
+                    <div class="research-grid">
+                        <div class="card">
+                            <div class="card__header">
+                                <h3>Influencer Recommendations</h3>
+                                <button class="btn btn--sm btn--outline" onclick="regenerateResearch('influencers')">Refresh</button>
+                            </div>
+                            <div class="card__body">
+                                <div id="influencers-list">
+                                    <!-- Influencer recommendations will be listed here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__header">
+                                <h3>Market Insights</h3>
+                                <button class="btn btn--sm btn--outline" onclick="regenerateResearch('insights')">Refresh</button>
+                            </div>
+                            <div class="card__body">
+                                <div id="market-insights">
+                                    <!-- Market insights will be listed here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__header">
+                                <h3>Competitor Analysis</h3>
+                                <button class="btn btn--sm btn--outline" onclick="regenerateResearch('competitors')">Refresh</button>
+                            </div>
+                            <div class="card__body">
+                                <div id="competitor-analysis">
+                                    <!-- Competitor analysis will be listed here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Planning Tab -->
+                <div class="canvas-tab" id="planning-tab">
+                    <div class="planning-grid">
+                        <div class="card">
+                            <div class="card__header">
+                                <h3>Campaign Timeline</h3>
+                                <button class="btn btn--sm btn--outline" onclick="regeneratePlanning('timeline')">Regenerate</button>
+                            </div>
+                            <div class="card__body">
+                                <div id="campaign-timeline">
+                                    <!-- Timeline will be generated here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__header">
+                                <h3>Budget Breakdown</h3>
+                                <button class="btn btn--sm btn--outline" onclick="regeneratePlanning('budget')">Regenerate</button>
+                            </div>
+                            <div class="card__body">
+                                <div id="budget-breakdown">
+                                    <!-- Budget breakdown will be generated here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__header">
+                                <h3>Next Steps</h3>
+                            </div>
+                            <div class="card__body">
+                                <div id="next-steps">
+                                    <ol class="steps-list">
+                                        <li>Review and approve campaign concept</li>
+                                        <li>Finalize creative assets</li>
+                                        <li>Set up tracking and analytics</li>
+                                        <li>Begin influencer outreach</li>
+                                        <li>Launch campaign according to timeline</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo-section" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Sample Campaign: Eco Coffee</h2>
+                <p>Explore a complete campaign generated by our AI</p>
+                <button class="btn btn--primary" onclick="showDemoCampaign()">Load Demo Campaign</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Generating your campaign...</p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

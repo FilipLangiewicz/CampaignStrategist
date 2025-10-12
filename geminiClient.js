@@ -93,68 +93,63 @@ class GeminiClient {
 
     let model, url, requestBody;
 
-    // === 🖼️ Jeśli generujemy obraz ===
+    // === 🖼️ GENEROWANIE OBRAZU ===
     if (options.imageGeneration) {
       model = 'gemini-2.5-flash-image';
-      url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=AIzaSyDLHLROojxG7vZ4T35t0YwvuZdFWO3o5b8`; // ${this.config.apiKey}`;
-
-      requestBody = {
-        contents: [
-          { parts: [{ "text": prompt }] }
-        ]
-      };
-    }
-    // === 💬 Standardowe zapytanie tekstowe ===
-    else {
-      model = this.config.geminiConfig.model || 'gemini-2.0-flash';
       url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.config.apiKey}`;
+      requestBody = { contents: [{ parts: [{ text: prompt }] }] };
 
-      requestBody = {
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          ...requestConfig.generationConfig,
-          ...options.generationConfig
-        }
-      };
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      // Jeśli API Gemini zwróci błąd (np. brak quota)
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.warn('Gemini image generation failed, using Hugging Face fallback...', errorData);
+        return await this.generateImageWithHuggingFace(prompt);
+      }
+
+      const data = await response.json();
+      const base64 = data?.candidates?.[0]?.content?.parts?.[0]?.inline_data?.data;
+      const mimeType = data?.images?.[0]?.image?.mimeType || 'image/png';
+
+      if (!base64) {
+        console.warn('Gemini returned no image data, falling back to Hugging Face.');
+        return await this.generateImageWithHuggingFace(prompt);
+      }
+
+      return { success: true, content: base64, mimeType, type: 'image', model };
     }
+
+    // === 💬 STANDARDOWE ZAPYTANIE TEKSTOWE ===
+    model = this.config.geminiConfig.model || 'gemini-2.0-flash';
+    url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.config.apiKey}`;
+    requestBody = {
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        ...requestConfig.generationConfig,
+        ...options.generationConfig
+      }
+    };
 
     const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Accept': 'application/json',
-        'Accept-Charset': 'utf-8'
-      },
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify(requestBody)
     });
 
-    // === Obsługa błędów ===
     if (!response.ok) {
       const errorData = await response.text();
       throw new Error(`API error ${response.status}: ${errorData}`);
     }
 
     const data = await response.json();
-
-    // === Jeśli to obraz ===
-    if (options.imageGeneration) {
-      const base64 = data?.candidates?.[0]?.content?.parts?.[0]?.inline_data?.data;
-      const mimeType = data?.images?.[0]?.image?.mimeType || 'image/png';
-
-      if (!base64) {
-        throw new Error('Image generation failed: No image data returned.');
-      }
-
-      return {
-        success: true,
-        content: base64,
-        mimeType,
-        type: 'image',
-        model
-      };
-    }
-
-    // === Jeśli to tekst ===
     const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const inputTokens = this.estimateTokens(prompt);
     const outputTokens = this.estimateTokens(responseText);
@@ -163,14 +158,45 @@ class GeminiClient {
     return {
       success: true,
       content: responseText,
-      tokensUsed: {
-        input: inputTokens,
-        output: outputTokens,
-        total: inputTokens + outputTokens
-      },
+      tokensUsed: { input: inputTokens, output: outputTokens, total: inputTokens + outputTokens },
       model
     };
   }
+
+  async generateImageWithHuggingFace(prompt) {
+    const HF_TOKEN = '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' || this.config.huggingFaceToken;
+    if (!HF_TOKEN) throw new Error('Hugging Face API token is missing!');
+
+    const modelUrl = 'https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0';
+
+    console.log('Using Hugging Face image generation...');
+
+    const response = await fetch(modelUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${HF_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ inputs: prompt })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Hugging Face API failed: ${errorText}`);
+    }
+
+    const blob = await response.arrayBuffer();
+    const base64 = Buffer.from(blob).toString('base64');
+
+    return {
+      success: true,
+      content: base64,
+      mimeType: 'image/png',
+      type: 'image',
+      model: 'huggingface/stable-diffusion-2'
+    };
+  }
+
   
   getFallbackResponse(prompt, error) {
     console.warn('API call failed, using fallback response:', error.message);

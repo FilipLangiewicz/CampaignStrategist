@@ -156,12 +156,15 @@ class CampaignGenerator {
             try {
               console.log(`Generating image ${i + 1}/2...`);
               const imageResult = await this.gemini.generateImage(imagePrompts[i]);
-
-              if (imageResult.success && imageResult.type === 'image') {
+              console.log(imageResult.success)
+              console.log(imageResult.text)
+              console.log(imageResult.content)
+              if (!imageResult.success) {
+                console.log("eeeeedsdsd")
                 generatedImages.push({
                   id: `img_${Date.now()}_${i}`,
                   prompt: imagePrompts[i],
-                  data: imageResult.content, // base64 data
+                  data: `data:${imageResult.mimeType || 'image/png'};base64,${imageResult.content}`,
                   mimeType: imageResult.mimeType || 'image/png',
                   generated_at: new Date().toISOString()
                 });
@@ -187,6 +190,7 @@ class CampaignGenerator {
               });
             }
           }
+          console.log(generatedImages)
 
           return {
             images: generatedImages,

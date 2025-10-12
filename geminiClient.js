@@ -19,16 +19,23 @@ class GeminiClient {
   }
 
   async generateImage(prompt, options = {}) {
-    return new Promise((resolve, reject) => {
-      this.requestQueue.push({
-        prompt,
-        options: { ...options, imageGeneration: true },
-        resolve,
-        reject
-      });
-      this.processQueue();
-    });
+  // Skip the queue and go directly to Hugging Face
+  console.log('Generating image with Hugging Face...');
+  
+  try {
+    const result = await this.generateImageWithHuggingFace(prompt);
+    return result;
+  } catch (error) {
+    console.error('Hugging Face image generation failed:', error);
+    return {
+      success: false,
+      content: null,
+      error: error.message,
+      placeholder: true
+    };
   }
+}
+
 
   
   async processQueue() {
@@ -164,38 +171,54 @@ class GeminiClient {
   }
 
   async generateImageWithHuggingFace(prompt) {
-    const HF_TOKEN = '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' || this.config.huggingFaceToken;
+    const HF_TOKEN = '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'; // Your token
     if (!HF_TOKEN) throw new Error('Hugging Face API token is missing!');
 
     const modelUrl = 'https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0';
 
     console.log('Using Hugging Face image generation...');
+    console.log('Prompt:', prompt);
 
-    const response = await fetch(modelUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${HF_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ inputs: prompt })
-    });
+    try {
+      const response = await fetch(modelUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HF_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ inputs: prompt })
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Hugging Face API failed: ${errorText}`);
-    }
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Hugging Face API failed: ${errorText}`);
+      }
 
-    const blob = await response.arrayBuffer();
-    const base64 = Buffer.from(blob).toString('base64');
+      // Get the image as arrayBuffer
+      const arrayBuffer = await response.arrayBuffer();
+      
+      // Convert to base64
+      const base64 = btoa(
+        new Uint8Array(arrayBuffer).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          ''
+        )
+      );
+
+    console.log('Image generated successfully, base64 length:', base64.length);
 
     return {
       success: true,
-      content: base64,
+      content: base64, // Return just the base64 string
       mimeType: 'image/png',
       type: 'image',
-      model: 'huggingface/stable-diffusion-2'
+      model: 'huggingface/stable-diffusion-xl-base-1.0'
     };
+  } catch (error) {
+    console.error('Hugging Face API error:', error);
+    throw error;
   }
+}
 
   
   getFallbackResponse(prompt, error) {

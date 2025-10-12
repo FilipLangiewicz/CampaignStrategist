@@ -217,15 +217,22 @@ displayImages(images) {
 
   container.innerHTML = images.map((image, index) => {
     if (image.data && !image.placeholder && !image.error) {
-      // Rzeczywisty obraz
+      // Real image with base64 data
+      // Create the full data URL
+      const dataUrl = image.data.startsWith('data:') 
+        ? image.data 
+        : `data:${image.mimeType || 'image/png'};base64,${image.data}`;
+      
       return `
         <div class="generated-image">
           <div class="image-wrapper">
-            <img src="data:${image.mimeType};base64,${image.data}" 
+            <img src="${dataUrl}" 
                  alt="Generated marketing image ${index + 1}" 
-                 loading="lazy">
+                 loading="lazy"
+                 style="max-width: 100%; height: auto; border-radius: 8px;">
             <div class="image-overlay">
-              <button class="btn btn--sm btn--primary" onclick="uiController.downloadImage('${image.id}', '${image.data}', '${image.mimeType}')">
+              <button class="btn btn--sm btn--primary" 
+                      onclick="uiController.downloadImage('${image.id}', '${image.data}', '${image.mimeType}')">
                 💾 Download
               </button>
             </div>
@@ -233,7 +240,8 @@ displayImages(images) {
           <div class="image-info">
             <p class="image-prompt">${this.escapeHtml(image.prompt)}</p>
             <div class="image-actions">
-              <button class="btn btn--sm btn--outline" onclick="regenerateVisuals('images')">
+              <button class="btn btn--sm btn--outline" 
+                      onclick="uiController.regenerateImage(${index})">
                 🔄 Regenerate
               </button>
             </div>
@@ -241,21 +249,25 @@ displayImages(images) {
         </div>
       `;
     } else {
-      // Placeholder lub błąd
+      // Placeholder or error
       return `
         <div class="generated-image generated-image--placeholder">
           <div class="image-wrapper">
-            <div class="image-placeholder">
-              <div class="placeholder-icon">🖼️</div>
-              <div class="placeholder-text">
-                ${image.error ? '⚠️ Generation failed' : '⏳ Generating image...'}
+            <div class="image-placeholder" style="min-height: 300px; display: flex; align-items: center; justify-content: center; background: #f3f4f6; border-radius: 8px;">
+              <div style="text-align: center;">
+                <div class="placeholder-icon" style="font-size: 48px;">🖼️</div>
+                <div class="placeholder-text" style="margin-top: 16px; color: #6b7280;">
+                  ${image.error ? '⚠️ Generation failed' : '⏳ Generating image...'}
+                </div>
+                ${image.error ? `<p style="color: #ef4444; font-size: 12px; margin-top: 8px;">${this.escapeHtml(image.error)}</p>` : ''}
               </div>
             </div>
           </div>
           <div class="image-info">
             <p class="image-prompt">${this.escapeHtml(image.prompt)}</p>
             <div class="image-actions">
-              <button class="btn btn--sm btn--primary" onclick="regenerateVisuals('images')">
+              <button class="btn btn--sm btn--primary" 
+                      onclick="uiController.regenerateImage(${index})">
                 🔄 Try Again
               </button>
             </div>
@@ -266,10 +278,58 @@ displayImages(images) {
   }).join('');
 }
 
+async regenerateImage(index) {
+  if (!this.currentCampaign || this.isProcessing) return;
+  
+  this.isProcessing = true;
+  this.showLoadingOverlay('Regenerating image...');
+  
+  try {
+    const images = this.currentCampaign.copy.images || [];
+    if (!images[index]) {
+      throw new Error('Image not found');
+    }
+    
+    // Get the original prompt
+    const prompt = images[index].prompt;
+    
+    // Generate new image with the same prompt
+    const imageResult = await window.campaignApp.geminiClient.generateImage(prompt);
+    
+    if (imageResult.success && imageResult.content) {
+      // Update the image data
+      images[index] = {
+        id: `img_regenerated_${Date.now()}_${index}`,
+        prompt: prompt,
+        data: imageResult.content,
+        mimeType: imageResult.mimeType || 'image/png',
+        generated_at: new Date().toISOString()
+      };
+      
+      // Update display
+      this.displayImages(images);
+      this.showSuccessMessage('Image regenerated successfully!');
+    } else {
+      throw new Error(imageResult.error || 'Failed to generate image');
+    }
+  } catch (error) {
+    console.error('Image regeneration error:', error);
+    this.showErrorMessage('Failed to regenerate image: ' + error.message);
+  } finally {
+    this.isProcessing = false;
+    this.hideLoadingOverlay();
+  }
+}
+
 // Dodaj metodę do pobierania obrazów:
 downloadImage(imageId, imageData, mimeType) {
+  // Create proper data URL
+  const dataUrl = imageData.startsWith('data:') 
+    ? imageData 
+    : `data:${mimeType || 'image/png'};base64,${imageData}`;
+  
   const link = document.createElement('a');
-  link.href = `data:${mimeType};base64,${imageData}`;
+  link.href = dataUrl;
   link.download = `marketing-image-${imageId}.png`;
   document.body.appendChild(link);
   link.click();

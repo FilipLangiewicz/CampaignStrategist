@@ -138,77 +138,70 @@ class CampaignGenerator {
   }
 
   async generateImages(briefData, strategy) {
-    const promptData = this.prompts.getPrompt('imageGeneration', briefData, strategy);
-
-    try {
-      // Najpierw wygeneruj prompty do obrazów
-      const result = await this.gemini.generateContent(promptData.prompt);
-
-      if (result.success) {
-        const validation = this.prompts.validateJsonResponse(result.content, 'imageGeneration');
-
-        if (validation.valid && validation.data.image_prompts) {
-          const imagePrompts = validation.data.image_prompts;
-          const generatedImages = [];
-
-          // Wygeneruj każdy obraz osobno
-          for (let i = 0; i < Math.min(imagePrompts.length, 2); i++) {
-            try {
-              console.log(`Generating image ${i + 1}/2...`);
-              const imageResult = await this.gemini.generateImage(imagePrompts[i]);
-              console.log(imageResult.success)
-              console.log(imageResult.text)
-              console.log(imageResult.content)
-              if (!imageResult.success) {
-                console.log("eeeeedsdsd")
-                generatedImages.push({
-                  id: `img_${Date.now()}_${i}`,
-                  prompt: imagePrompts[i],
-                  data: `data:${imageResult.mimeType || 'image/png'};base64,${imageResult.content}`,
-                  mimeType: imageResult.mimeType || 'image/png',
-                  generated_at: new Date().toISOString()
-                });
-              } else {
-                // Fallback - utwórz placeholder
-                generatedImages.push({
-                  id: `img_placeholder_${i}`,
-                  prompt: imagePrompts[i],
-                  data: null,
-                  placeholder: true,
-                  generated_at: new Date().toISOString()
-                });
-              }
-            } catch (imageError) {
-              console.warn(`Failed to generate image ${i + 1}:`, imageError);
-              // Dodaj placeholder w przypadku błędu
-              generatedImages.push({
-                id: `img_error_${i}`,
-                prompt: imagePrompts[i],
-                data: null,
-                error: imageError.message,
-                generated_at: new Date().toISOString()
-              });
-            }
-          }
-          console.log(generatedImages)
-
-          return {
-            images: generatedImages,
-            _meta: {
-              tokensUsed: result.tokensUsed,
-              model: result.model,
-              generatedAt: new Date().toISOString()
-            }
-          };
+  try {
+    console.log('Generating marketing images...');
+    
+    // Create image prompts based on brief and strategy
+    const imagePrompts = [
+      `Professional product photography of ${briefData.product} with clean modern background, high quality, commercial style`,
+      `${briefData.audience} people enjoying ${briefData.product} in a lifestyle setting, authentic, natural lighting, marketing photography`
+    ];
+    
+    const generatedImages = [];
+    
+    // Generate each image directly with Hugging Face
+    for (let i = 0; i < imagePrompts.length; i++) {
+      try {
+        console.log(`Generating image ${i + 1}/${imagePrompts.length}...`);
+        
+        // Direct call to Hugging Face via generateImage
+        const imageResult = await this.gemini.generateImage(imagePrompts[i]);
+        
+        if (imageResult.success && imageResult.content) {
+          generatedImages.push({
+            id: `img_${Date.now()}_${i}`,
+            prompt: imagePrompts[i],
+            data: imageResult.content, // This is already base64
+            mimeType: imageResult.mimeType || 'image/png',
+            generated_at: new Date().toISOString()
+          });
+          console.log(`Image ${i + 1} generated successfully`);
+        } else {
+          // Fallback - create placeholder
+          console.warn(`Image ${i + 1} generation failed, using placeholder`);
+          generatedImages.push({
+            id: `img_placeholder_${i}`,
+            prompt: imagePrompts[i],
+            data: null,
+            placeholder: true,
+            generated_at: new Date().toISOString()
+          });
         }
+      } catch (imageError) {
+        console.warn(`Failed to generate image ${i + 1}:`, imageError);
+        generatedImages.push({
+          id: `img_error_${i}`,
+          prompt: imagePrompts[i],
+          data: null,
+          error: imageError.message,
+          generated_at: new Date().toISOString()
+        });
       }
-    } catch (error) {
-      console.warn('Image generation failed, using placeholders:', error);
     }
-
-    // Fallback - wygeneruj placeholders
+    
+    return {
+      images: generatedImages,
+      _meta: {
+        generatedAt: new Date().toISOString(),
+        model: 'huggingface/stable-diffusion'
+      }
+    };
+    
+  } catch (error) {
+    console.warn('Image generation failed, using placeholders:', error);
     return this.createFallbackImages(briefData);
   }
+}
 
   // Dodaj metodę fallback:
   createFallbackImages(briefData) {

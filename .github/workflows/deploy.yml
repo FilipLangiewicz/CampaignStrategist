@@ -18,19 +18,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create dist folder and inject environment keys
-        env:
-          HF_API_KEY: ${{ secrets.HF_API_KEY }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           rm -rf dist
           mkdir -p dist
 
-          echo "window.HF_API_KEY='${HF_API_KEY}';" > env.js
-          echo "window.GEMINI_API_KEY='${GEMINI_API_KEY}';" >> env.js
-          echo "✅ env.js created."
+          echo "window.HF_API_KEY='${{ secrets.HF_API_KEY }}';" > dist/env.js
+          echo "window.GEMINI_API_KEY='${{ secrets.GEMINI_API_KEY }}';" >> dist/env.js
+
+          echo "✅ dist/env.js created:"
+          cat dist/env.js
 
           cp index.html dist/index.html
           cp config.js dist/config.js
+          cp app.js dist/app.js
 
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3

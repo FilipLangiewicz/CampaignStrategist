@@ -45,10 +45,10 @@ jobs:
         with:
           path: dist
 
-      - name: Inject secrets into config.js
+      - name: Inject secrets into dist/config.js
         run: |
-          sed -i "s|const HF_TOKEN = null;|const HF_TOKEN = '${{ secrets.HF_API_KEY }}';|" config.js
-          
+          sed -i "s|const HF_TOKEN = null|const HF_TOKEN = '${{ secrets.HF_API_KEY }}'|" dist/config.js
+          sed -i "s|const GEMINI_TOKEN = window.GEMINI_API_KEY|const GEMINI_TOKEN = '${{ secrets.GEMINI_API_KEY }}'|" dist/config.js          
 
   deploy:
     environment:

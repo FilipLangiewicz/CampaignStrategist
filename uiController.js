@@ -424,7 +424,7 @@ downloadImage(imageId, imageData, mimeType) {
         <div class="influencer-info">
           <h4>${this.escapeHtml(influencer.name || 'Influencer')}</h4>
           <p class="influencer-stats">
-            ${influencer.followers || '0'} followers â˘ ${influencer.engagement || '0%'} engagement â˘ ${this.escapeHtml(influencer.niche || 'General')}
+            ${influencer.followers || '0'} followers ${influencer.engagement || '0%'} engagement ${this.escapeHtml(influencer.niche || 'General')}
           </p>
         </div>
       </div>

@@ -171,7 +171,6 @@ class GeminiClient {
   }
 
   async generateImageWithHuggingFace(prompt) {
-    const HF_TOKEN = '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'; // Your token
     if (!HF_TOKEN) throw new Error('Hugging Face API token is missing!');
 
     const modelUrl = 'https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0';

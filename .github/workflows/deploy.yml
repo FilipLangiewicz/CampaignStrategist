@@ -1,0 +1,46 @@
+name: Build and deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # zmień jeśli używasz innej gałęzi
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create dist folder and inject environment keys
+        env:
+          HF_API_KEY: ${{ secrets.HF_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          rm -rf dist
+          mkdir -p dist
+
+          echo "window.HF_API_KEY='${HF_API_KEY}';" > dist/env.js
+          echo "window.GG_API_KEY='${GG_API_KEY}';" >> dist/env.js
+          echo "✅ dist/env.js created."
+
+          cp index.html dist/index.html
+          cp config.js dist/config.js
+          cp main.js dist/main.js
+
+      - name: Upload artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

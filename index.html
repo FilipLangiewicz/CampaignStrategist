@@ -18,7 +18,7 @@
                 </div>
                 <nav class="nav">
                     <button class="btn btn--outline" onclick="showSection('home')">Home</button>
-                    <button class="btn btn--outline" onclick="showSection('campaigns')">My Campaigns</button>
+<!--                    <button class="btn btn&#45;&#45;outline" onclick="showSection('campaigns')">My Campaigns</button>-->
                     <button class="btn btn--primary" onclick="showSection('brief')">Create Campaign</button>
                 </nav>
             </div>
@@ -243,7 +243,7 @@
                     </div>
                     <div class="canvas-actions">
                         <button class="btn btn--outline" onclick="exportCampaign()">Export Campaign</button>
-                        <button class="btn btn--primary" onclick="saveCampaign()">Save Campaign</button>
+<!--                        <button class="btn btn&#45;&#45;primary" onclick="saveCampaign()">Save Campaign</button>-->
                     </div>
                 </div>
             </div>
@@ -400,7 +400,7 @@
 
                     <div class="copy-section">
                       <div class="copy-header">
-                        <h3>Marketing Images</h3>
+                        <h3 style="margin-top:20px">Marketing Images</h3>
                         <p>AI-generated images for your campaign</p>
                       </div>
                       <div id="generated-images" class="image-gallery">
@@ -517,6 +517,7 @@
     </div>
 
     <!-- Load JavaScript modules -->
+    <script src="env.js"></script>
     <script src="config.js"></script>
     <script src="promptTemplates.js"></script>
     <script src="geminiClient.js"></script>

@@ -1,9 +1,17 @@
 // Configuration and Environment Management
 console.log('=== CONFIG LOADED ===');
 
+// Load HF API key
+const HF_TOKEN = window.HF_API_KEY;
+const GEMINI_TOKEN = window.GEMINI_API_KEY;
+
+if (!HF_TOKEN) {
+  console.warn('⚠️ HF_API_KEY not found! Wczytaj env.js z kluczem.');
+}
+
 class AppConfig {
   constructor() {
-    this.apiKey = null;
+    this.apiKey = GEMINI_TOKEN || null;
     this.geminiConfig = {
       baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
       model: 'gemini-2.5-flash',
@@ -36,17 +44,15 @@ class AppConfig {
   }
   
   loadApiKey() {
-    // Simulate reading from .env file
-    // In production: this.apiKey = process.env.GEMINI_API_KEY;
-    
-    // For demo purposes, try to get from a global variable that could be set
-    // if (typeof window !== 'undefined' && window.GEMINI_API_KEY) {
-    //   this.apiKey = window.GEMINI_API_KEY;
-    // }
+    // Najpierw sprawdź, czy globalna zmienna jest dostępna
+    if (typeof window !== 'undefined' && window.GEMINI_API_KEY) {
+      this.apiKey = window.GEMINI_API_KEY;
+    } else {
+      console.warn('Brak window.GEMINI_API_KEY – używany klucz testowy lub brak konfiguracji.');
+      this.apiKey = null; // lub fallback
+    }
 
-    this.apiKey = 'AIzaSyABs8kt2QsVUrF5tId2c4q2cFglfY4mUwI'
-    
-    // Check if API key exists and is valid format
+    // Sprawdź poprawność i zaktualizuj status
     if (this.apiKey && this.isValidApiKey(this.apiKey)) {
       this.updateApiStatus('connected', 'API connected and ready');
     } else {

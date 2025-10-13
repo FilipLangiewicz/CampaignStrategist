@@ -6,7 +6,6 @@ const GEMINI_TOKEN = 'AIzaSyDLHLROojxG7vZ4T35t0YwvuZdFWO3o5b8';
 const a = 'hf_hZzvoohjKqWSuwNIwA'
 const b = 'WUBnTNuEfaqYGMvZ'
 const HF_TOKEN = a + b
-console.log(HF_TOKEN, GEMINI_TOKEN);
 
 
 if (!HF_TOKEN) {

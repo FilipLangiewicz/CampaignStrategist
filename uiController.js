@@ -63,15 +63,12 @@ class UIController {
     event.preventDefault();
     
     if (this.isProcessing) return;
-    console.log("eee1")
     const briefData = this.extractFormData(event.target);
-    console.log("eee2")
 
     // Validate required fields
     if (!this.validateBriefData(briefData)) {
       return;
     }
-    console.log("eee3")
 
     // Start campaign generation
     this.isProcessing = true;

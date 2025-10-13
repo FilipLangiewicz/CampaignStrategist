@@ -49,10 +49,10 @@ class AppConfig {
   
   loadApiKey() {
     // Najpierw sprawdź, czy globalna zmienna jest dostępna
-    if (typeof window !== 'undefined' && window.GEMINI_API_KEY) {
-      this.apiKey = window.GEMINI_API_KEY;
+    if (typeof window !== 'undefined' && GEMINI_API_KEY) {
+      this.apiKey = GEMINI_API_KEY;
     } else {
-      console.warn('Brak window.GEMINI_API_KEY – używany klucz testowy lub brak konfiguracji.');
+      console.warn('Brak GEMINI_API_KEY – używany klucz testowy lub brak konfiguracji.');
       this.apiKey = null; // lub fallback
     }
 

@@ -2,13 +2,11 @@
 console.log('=== CONFIG LOADED ===');
 
 // Load HF API key
-const HF_TOKEN = null
-const GEMINI_TOKEN = window.GEMINI_API_KEY;
-console.log(HF_TOKEN, GEMINI_TOKEN);
+const GEMINI_TOKEN = 'AIzaSyDLHLROojxG7vZ4T35t0YwvuZdFWO3o5b8';
 const a = 'hf_hZzvoohjKqWSuwNIwA'
 const b = 'WUBnTNuEfaqYGMvZ'
-console.log(a+b);
-// get github secrets.API_KEY:
+const HF_TOKEN = a + b
+console.log(HF_TOKEN, GEMINI_TOKEN);
 
 
 if (!HF_TOKEN) {

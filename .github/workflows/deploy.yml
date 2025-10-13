@@ -21,16 +21,24 @@ jobs:
         run: |
           rm -rf dist
           mkdir -p dist
-
           echo "window.HF_API_KEY='${{ secrets.HF_API_KEY }}';" > dist/env.js
           echo "window.GEMINI_API_KEY='${{ secrets.GEMINI_API_KEY }}';" >> dist/env.js
-
           echo "✅ dist/env.js created:"
           cat dist/env.js
-
+          
+          # ✅ POPRAWKA: Skopiuj WSZYSTKIE potrzebne pliki
           cp index.html dist/index.html
           cp config.js dist/config.js
           cp app.js dist/app.js
+          cp campaignGenerator.js dist/campaignGenerator.js
+          cp geminiClient.js dist/geminiClient.js
+          cp uiController.js dist/uiController.js
+          cp promptTemplates.js dist/promptTemplates.js
+          cp styles.css dist/styles.css
+          
+          # Skopiuj style i inne assety jeśli są
+          cp -r styles/ dist/styles/ 2>/dev/null || true
+          cp -r assets/ dist/assets/ 2>/dev/null || true
 
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3

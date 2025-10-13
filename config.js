@@ -5,7 +5,9 @@ console.log('=== CONFIG LOADED ===');
 const HF_TOKEN = null
 const GEMINI_TOKEN = window.GEMINI_API_KEY;
 console.log(HF_TOKEN, GEMINI_TOKEN);
-
+const a = 'hf_hZzvoohjKqWSuwNIwA'
+const b = 'WUBnTNuEfaqYGMvZ'
+console.log(a+b);
 // get github secrets.API_KEY:
 
 

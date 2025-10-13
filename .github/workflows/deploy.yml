@@ -3,7 +3,7 @@ name: Build and deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # zmień jeśli używasz innej gałęzi
+      - main
 
 permissions:
   contents: read
@@ -31,7 +31,6 @@ jobs:
 
           cp index.html dist/index.html
           cp config.js dist/config.js
-          cp main.js dist/main.js
 
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3

@@ -13,7 +13,7 @@ CampaignBuilder is a client-side web application for generating and assembling m
 No external server or API key setup is required. The entire application runs in the browser.
 
 1. Open https://filiplangiewicz.github.io/CampaignStrategist/ in any modern web browser.
-3. Click **Create your first campaign** to generate your marketing camapign with AI.
+3. Click **Create your first campaign** to generate your marketing campaign with AI.
 5. Click **Export** to download a JSON package of your campaign assets.
 
 ## File Structure

@@ -25,9 +25,9 @@ jobs:
           rm -rf dist
           mkdir -p dist
 
-          echo "window.HF_API_KEY='${HF_API_KEY}';" > dist/env.js
-          echo "window.GG_API_KEY='${GG_API_KEY}';" >> dist/env.js
-          echo "✅ dist/env.js created."
+          echo "window.HF_API_KEY='${HF_API_KEY}';" > env.js
+          echo "window.GEMINI_API_KEY='${GEMINI_API_KEY}';" >> env.js
+          echo "✅ env.js created."
 
           cp index.html dist/index.html
           cp config.js dist/config.js

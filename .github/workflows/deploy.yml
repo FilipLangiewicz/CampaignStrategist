@@ -34,7 +34,7 @@ jobs:
           cp geminiClient.js dist/geminiClient.js
           cp uiController.js dist/uiController.js
           cp promptTemplates.js dist/promptTemplates.js
-          cp styles.css dist/styles.css
+          cp style.css dist/style.css
           
           # Skopiuj style i inne assety jeśli są
           cp -r styles/ dist/styles/ 2>/dev/null || true

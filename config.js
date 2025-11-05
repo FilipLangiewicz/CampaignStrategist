@@ -2,7 +2,7 @@
 console.log('=== CONFIG LOADED ===');
 
 // Load HF API key
-const GEMINI_TOKEN = 'AIzaSyDLHLROojxG7vZ4T35t0YwvuZdFWO3o5b8';
+const GEMINI_TOKEN = 'AIzaSyDXc5AN4a0VuyseSDa58RMVt4MinHRkI0M';
 const a = 'hf_hZzvoohjKqWSuwNIwA'
 const b = 'WUBnTNuEfaqYGMvZ'
 const HF_TOKEN = a + b

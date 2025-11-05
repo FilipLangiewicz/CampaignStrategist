@@ -136,7 +136,7 @@ class GeminiClient {
 
     // === 💬 STANDARDOWE ZAPYTANIE TEKSTOWE ===
     model = this.config.geminiConfig.model || 'gemini-2.0-flash';
-    url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.config.apiKey}`;
+    url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
     requestBody = {
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
@@ -147,7 +147,11 @@ class GeminiClient {
 
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'x-goog-api-key': this.config.apiKey
+      },      
       body: JSON.stringify(requestBody)
     });
 
@@ -173,7 +177,7 @@ class GeminiClient {
   async generateImageWithHuggingFace(prompt) {
     if (!HF_TOKEN) throw new Error('Hugging Face API token is missing!');
 
-    const modelUrl = 'https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0';
+    const modelUrl = 'https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0';
 
     console.log('Using Hugging Face image generation...');
     console.log('Prompt:', prompt);
@@ -263,11 +267,11 @@ class GeminiClient {
         content: JSON.stringify({
           headlines: ["Transform Your Marketing Today", "Results That Speak Volumes", "Your Success Story Starts Here"],
           social_posts: [
-            "ÄÂÂÂ Ready to elevate your marketing game? Let's create something amazing together! #Marketing #Innovation",
-            "ÄÂÂÄ Great campaigns start with great ideas. What's your next big move? #Strategy #Growth",
-            "ÄÂÂĹť Precision meets creativity in every campaign we craft. Your brand deserves excellence! #BrandStrategy",
-            "Ă˘ÂÂ¨ From concept to conversion - we make marketing magic happen! #Results #Success",
-            "ÄÂÂÂ Join the brands that choose excellence. Your growth story starts now! #Marketing #Growth"
+            "Ready to elevate your marketing game? Let's create something amazing together! #Marketing #Innovation",
+            "Great campaigns start with great ideas. What's your next big move? #Strategy #Growth",
+            "Precision meets creativity in every campaign we craft. Your brand deserves excellence! #BrandStrategy",
+            "From concept to conversion - we make marketing magic happen! #Results #Success",
+            "Join the brands that choose excellence. Your growth story starts now! #Marketing #Growth"
           ],
           ad_copy: [
             "Discover the power of strategic marketing that delivers real results. Our proven approach combines creativity with data-driven insights to help your brand reach new heights.",

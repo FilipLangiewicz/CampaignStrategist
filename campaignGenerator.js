@@ -7,12 +7,12 @@ class CampaignGenerator {
     this.prompts = promptTemplates;
     this.currentCampaign = null;
     this.generationSteps = [
-      { id: 'analyze', name: 'Analyzing Brief', icon: 'ÄÂÂÂ' },
-      { id: 'strategy', name: 'Formulating Strategy', icon: 'ÄÂÂÄ' },
-      { id: 'visuals', name: 'Creating Visual Concepts', icon: 'ÄÂÂÂ¨' },
-      { id: 'copy', name: 'Generating Content', icon: 'Ă˘ÂÂÄÂ¸Â' },
-      { id: 'research', name: 'Market Research', icon: 'ÄÂÂÂ' },
-      { id: 'planning', name: 'Media Planning', icon: 'ÄÂÂÂ' }
+      { id: 'analyze', name: 'Analyzing Brief', icon: '🔍' },
+      { id: 'strategy', name: 'Formulating Strategy', icon: '💡' },
+      { id: 'visuals', name: 'Creating Visual Concepts', icon: '🎨' },
+      { id: 'copy', name: 'Generating Content', icon: '✍️' },
+      { id: 'research', name: 'Market Research', icon: '📊' },
+      { id: 'planning', name: 'Media Planning', icon: '📊' }
     ];
   }
 
